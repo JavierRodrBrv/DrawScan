@@ -18,4 +18,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/logo_transparent" />
+
+    <Button
+        android:id="@+id/botonIniciarSesion"
+        android:layout_width="279dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="350dp"
+        android:layout_marginBottom="232dp"
+        android:background="@drawable/boton_redondo"
+        android:drawableStart="@drawable/icono_google"
+        android:shadowRadius="15"
+        android:text="@string/iniciarSesionGoogle"
+        android:textColor="@color/colorgris"
+        android:onClick="iniciarSesionGoogle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imagenLogo" />
 </androidx.constraintlayout.widget.ConstraintLayout>

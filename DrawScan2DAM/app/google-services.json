@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "538020704469",
+    "firebase_url": "https://drawscan-c3360.firebaseio.com",
+    "project_id": "drawscan-c3360",
+    "storage_bucket": "drawscan-c3360.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:538020704469:android:fe9ebd55532eb523ae325c",
+        "android_client_info": {
+          "package_name": "com.example.drawscan"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "538020704469-c6235c2lovohgm267c2ph8sccd055q5k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCszhnjFV5vv2Dr9vzleuefsYU52ymEVEU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "538020704469-c6235c2lovohgm267c2ph8sccd055q5k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
