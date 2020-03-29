@@ -9,11 +9,16 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 
 class MainActivity : AppCompatActivity() {
     private val GOOGLE_SIGN = 123 // Código de permiso para iniciar sesión con Google
@@ -41,10 +46,11 @@ class MainActivity : AppCompatActivity() {
 
 
         // Permite elegir con que cuenta de google quiere iniciar sesion
-        val gsio = GoogleSignInOptions.Builder().requestIdToken(getString(R.string.default_web_client_id))
+        val gsio = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
-        gsic = GoogleSignIn.getClient(applicationContext, gsio)
+        gsic = GoogleSignIn.getClient(this, gsio)
 
 
 
@@ -72,75 +78,44 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Función que obtiene un resultado de la actividad, a través de startActivityForResult()
-     * @param requestCode Código de permiso
-     * @param resultCode Código de resultado
-     * @param data Intent del activity
      */
     override fun onActivityResult(requestCode: Int,resultCode: Int,data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == GOOGLE_SIGN) {
 
-            val resultado = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
-            Toast.makeText(applicationContext,resultado.toString(),Toast.LENGTH_LONG).show()
-            if (resultado.isSuccess) {
-                val cuentaGoogle = resultado.signInAccount
-                if (cuentaGoogle!!.email != null) {
-                    autenticacionFirebase(cuentaGoogle.email)
-                }
-            } else {
-                Toast.makeText(applicationContext, "Error", Toast.LENGTH_LONG).show()
+        if (requestCode == GOOGLE_SIGN) {
+            val taskSignIn = GoogleSignIn.getSignedInAccountFromIntent(data)
+            var cuentaGoogle=taskSignIn.result
+            try {
+
+                autenticacionFirebase(cuentaGoogle!!)
+            }catch (e : ApiException){
+                Toast.makeText(this,e.statusCode,Toast.LENGTH_LONG).show()
+
             }
-        } else {
-            Toast.makeText(
-                applicationContext,
-                "Este error saldrá si alguién ha programando a las 1 de la noche y no ha hecho las cosas bien",
-                Toast.LENGTH_LONG
-            ).show()
         }
     }
 
     /**
      * Función que verifica la cuenta elegida de Google con Firebase
-     * @param emailGoogle cuenta de Google que ha elegido el usuario
      */
-    fun autenticacionFirebase(emailGoogle: String?) {
-        mFirebase!!.signInWithEmailAndPassword(emailGoogle!!, emailGoogle)
-            .addOnCompleteListener(
-                this
-            ) { task ->
-                if (task.isSuccessful) {
-                    val intentPaginaPrincipal =Intent(applicationContext, PantallaFragments::class.java)
-                    startActivity(intentPaginaPrincipal)
+    fun autenticacionFirebase(googleAccount: GoogleSignInAccount) {
+        val credential = GoogleAuthProvider.getCredential(googleAccount.idToken,null)
+        mFirebase!!.signInWithCredential(credential).addOnCompleteListener(object : OnCompleteListener<AuthResult>{
+            override fun onComplete(task: Task<AuthResult>) {
 
-                    //barraProgreso.setVisibility(View.INVISIBLE)
-                } else {
-                    crearInicioSesion(emailGoogle)
+                if(task.isSuccessful){
+                    val currentUser=mFirebase!!.currentUser
+                    val irDirectamente = Intent(this@MainActivity, PantallaFragments::class.java)
+                    irDirectamente.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    startActivity(irDirectamente)
+                    Toast.makeText(this@MainActivity,currentUser!!.email,Toast.LENGTH_LONG).show()
+                }else{
+                    Toast.makeText(this@MainActivity,task.exception!!.message,Toast.LENGTH_LONG).show()
+
                 }
             }
-    }
+        })
 
-    /**
-     * Función que crea la cuenta en caso de que no exista a la hora de verificar en Firebase
-     * @param emailGoogle
-     */
-    fun crearInicioSesion(emailGoogle: String?) {
-        mFirebase!!.createUserWithEmailAndPassword(emailGoogle!!, emailGoogle)
-            .addOnCompleteListener(
-                this
-            ) { task ->
-                if (task.isSuccessful) {
-                    val intentPaginaPrincipal =
-                        Intent(applicationContext, MainActivity::class.java)
-                    startActivity(intentPaginaPrincipal)
-                } else {
-                    Toast.makeText(
-                        applicationContext,
-                        "Error a la hora de iniciar sesíon",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-                //barraProgreso.setVisibility(View.INVISIBLE)
-            }
     }
 
 
@@ -150,7 +125,7 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         mFirebase = FirebaseAuth.getInstance()
         if (mFirebase!!.getCurrentUser() != null) { // Si el usuario ya ha iniciado sesión anteriormente, ira directamente a la página principal
-            val irDirectamente = Intent(this, MainActivity::class.java)
+            val irDirectamente = Intent(this, PantallaFragments::class.java)
             irDirectamente.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
             startActivity(irDirectamente)
             Toast.makeText(
@@ -166,7 +141,6 @@ class MainActivity : AppCompatActivity() {
      * Función que sobreescribe la funcionalidad al dar el botón de atrás
      */
     override fun onBackPressed() {
-        super.onBackPressed()
         finishAffinity()
     }
 

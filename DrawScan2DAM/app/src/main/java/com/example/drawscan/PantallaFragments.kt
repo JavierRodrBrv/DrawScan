@@ -9,4 +9,12 @@ class PantallaFragments : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pantalla_fragments)
     }
+
+
+    /**
+     * Función que sobreescribe la funcionalidad al dar el botón de atrás
+     */
+    override fun onBackPressed() {
+        finishAffinity()
+    }
 }
