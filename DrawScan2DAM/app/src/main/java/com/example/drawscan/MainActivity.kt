@@ -34,10 +34,10 @@ class MainActivity : AppCompatActivity() {
         window.setFlags(
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN
-
-
         )
         setContentView(R.layout.activity_main)
+
+
         miLayout = findViewById<View>(R.id.miFondo) as ConstraintLayout
         animationDrawable = miLayout!!.getBackground() as AnimationDrawable?
         animationDrawable?.setEnterFadeDuration(4000)
@@ -52,10 +52,7 @@ class MainActivity : AppCompatActivity() {
             .build()
         gsic = GoogleSignIn.getClient(this, gsio)
 
-
-
     }
-
 
     override fun onResume() {
         super.onResume()
@@ -115,7 +112,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
-
     }
 
 
