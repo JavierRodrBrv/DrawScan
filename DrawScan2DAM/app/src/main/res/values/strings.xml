@@ -2,4 +2,14 @@
     <string name="app_name">DrawScan</string>
     <string name="descripcionImagen">Esta imagen es el logo de la aplicación.</string>
     <string name="iniciarSesionGoogle">Iniciar sesión con Google</string>
+    <string name="cerrarSesionGoogle">Cerrar sesión de Google</string>
+    <string name="switchModoOscuro">Modo oscuro</string>
+    <string name="tituloDialogo">Cerrar sesión</string>
+    <string name="mensajeDialogo">¿Estás seguro de que quieres cerrar sesión?</string>
+    <string name="botonNegativoDialogo">No</string>
+    <string name="botonPositivoDialogo">Si</string>
+    <string name="textoSesionCerrada">Se ha cerrado la sesión</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

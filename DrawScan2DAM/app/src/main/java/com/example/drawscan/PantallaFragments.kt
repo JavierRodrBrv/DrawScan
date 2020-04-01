@@ -3,15 +3,18 @@ package com.example.drawscan
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
+import com.example.drawscan.fragmentos.FragmentAjustes
+import com.example.drawscan.fragmentos.FragmentFavoritos
+import com.example.drawscan.fragmentos.FragmentHistorial
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
 
 class PantallaFragments : AppCompatActivity() {
-    private var adapter: AdapterParaFragmentos? = null// Adapter utilizado para los fragmentos
-    private var viewPager: ViewPager? = null // Despalzar los fragmentos deslizando hacia la izquierda o derecha
-    private var botonCamara: FloatingActionButton? = null //Boton que dirige a la camara
-    private var tb: TabLayout? = null // Layout del tab
-    private var modoDark : Boolean? = null// Switch para cambiar el modo osucro
+    private lateinit var adapter: AdapterParaFragmentos// Adapter utilizado para los fragmentos
+    private lateinit var viewPager: ViewPager // Despalzar los fragmentos deslizando hacia la izquierda o derecha
+    private lateinit var botonCamara: FloatingActionButton //Boton que dirige a la camara
+    private lateinit var tb: TabLayout // Layout del tab
+    private var modoDark : Boolean = false// Switch para cambiar el modo osucro
 
 
 
@@ -21,6 +24,15 @@ class PantallaFragments : AppCompatActivity() {
         adapter = AdapterParaFragmentos(supportFragmentManager)
         viewPager = findViewById(R.id.viewPager)
         botonCamara = findViewById(R.id.floatingActionButton)
+        tb = findViewById(R.id.Tabs)
+        crearViewPager(viewPager)
+        tb.setupWithViewPager(viewPager) // Mete el viewPager creado dentro del TabLayout
+
+        // Meter iconos del tab
+        tb.getTabAt(0)!!.icon = getDrawable(R.drawable.icono_historial)
+        tb.getTabAt(1)!!.icon = getDrawable(R.drawable.icono_favoritos)
+        tb.getTabAt(2)!!.icon = getDrawable(R.drawable.icono_ajustes)
+
     }
 
     /**
@@ -29,9 +41,9 @@ class PantallaFragments : AppCompatActivity() {
      * @param vp el viewPager donde le queremos meter el adapter
      */
     fun crearViewPager(vp: ViewPager) {
-        //adapter!!.nuevoFragmento(TabHistorial())
-        //adapter!!.nuevoFragmento(TabFavoritos())
-        //adapter!!.nuevoFragmento(TabSoporte())
+        adapter.nuevoFragmento(FragmentHistorial())
+        adapter.nuevoFragmento(FragmentFavoritos())
+        adapter.nuevoFragmento(FragmentAjustes())
         vp.adapter = adapter
     }
 

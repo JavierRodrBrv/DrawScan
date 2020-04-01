@@ -105,7 +105,7 @@ class MainActivity : AppCompatActivity() {
                     val irDirectamente = Intent(this@MainActivity, PantallaFragments::class.java)
                     irDirectamente.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     startActivity(irDirectamente)
-                    Toast.makeText(this@MainActivity,currentUser!!.email,Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@MainActivity,"Iniciado sesión como:\n${mFirebase!!.getCurrentUser()!!.displayName}\n${mFirebase!!.getCurrentUser()!!.email}",Toast.LENGTH_LONG).show()
                 }else{
                     Toast.makeText(this@MainActivity,task.exception!!.message,Toast.LENGTH_LONG).show()
 
@@ -126,7 +126,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(irDirectamente)
             Toast.makeText(
                 applicationContext,
-                "Iniciado sesión como: " + mFirebase!!.getCurrentUser()!!.email,
+                "Iniciado sesión como:\n${mFirebase!!.getCurrentUser()!!.displayName}\n${mFirebase!!.getCurrentUser()!!.email}",
                 Toast.LENGTH_LONG
             ).show()
         }

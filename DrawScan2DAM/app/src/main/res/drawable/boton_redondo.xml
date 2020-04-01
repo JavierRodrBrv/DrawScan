@@ -18,6 +18,9 @@
     <size
         android:height="60dp"
         android:width="270dp" />
+    <stroke android:width="0.5dp"
+        android:color="@color/colorgris"
+        />
 
 
 </shape>
