@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">DrawScan</string>
-    <string name="descripcionImagen">Esta imagen es el logo de la aplicación.</string>
+    <string name="descripcionImagenLogo">Esta imagen es el logo de la aplicación.</string>
     <string name="iniciarSesionGoogle">Iniciar sesión con Google</string>
     <string name="cerrarSesionGoogle">Cerrar sesión de Google</string>
     <string name="switchModoOscuro">Modo oscuro</string>
@@ -9,6 +9,9 @@
     <string name="botonNegativoDialogo">No</string>
     <string name="botonPositivoDialogo">Si</string>
     <string name="textoSesionCerrada">Se ha cerrado la sesión</string>
+    <string name="fechaConcreta">Fecha: </string>
+    <string name="porcentajeExacto">Porcentaje similitud: </string>
+    <string name="descripcionFotoRealizada">Esta imagen es la recogida de la foto que el usuario ha realizado.</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

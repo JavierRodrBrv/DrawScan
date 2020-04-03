@@ -1,4 +1,4 @@
-package com.example.drawscan
+package com.example.drawscan.fragmentos
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager

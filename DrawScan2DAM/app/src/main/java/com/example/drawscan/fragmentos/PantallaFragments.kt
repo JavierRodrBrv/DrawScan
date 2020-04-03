@@ -1,11 +1,9 @@
-package com.example.drawscan
+package com.example.drawscan.fragmentos
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
-import com.example.drawscan.fragmentos.FragmentAjustes
-import com.example.drawscan.fragmentos.FragmentFavoritos
-import com.example.drawscan.fragmentos.FragmentHistorial
+import com.example.drawscan.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
 
@@ -21,7 +19,9 @@ class PantallaFragments : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pantalla_fragments)
-        adapter = AdapterParaFragmentos(supportFragmentManager)
+        adapter = AdapterParaFragmentos(
+            supportFragmentManager
+        )
         viewPager = findViewById(R.id.viewPager)
         botonCamara = findViewById(R.id.floatingActionButton)
         tb = findViewById(R.id.Tabs)
