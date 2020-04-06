@@ -3,6 +3,7 @@ package com.example.drawscan
 import android.content.Intent
 import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
@@ -16,6 +17,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.RuntimeExecutionException
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
@@ -81,14 +83,15 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == GOOGLE_SIGN) {
-            val taskSignIn = GoogleSignIn.getSignedInAccountFromIntent(data)
-            var cuentaGoogle=taskSignIn.result
             try {
-
+                val taskSignIn = GoogleSignIn.getSignedInAccountFromIntent(data)
+                var cuentaGoogle=taskSignIn.result
                 autenticacionFirebase(cuentaGoogle!!)
             }catch (e : ApiException){
                 Toast.makeText(this,e.statusCode,Toast.LENGTH_LONG).show()
 
+            }catch(runtimeException:RuntimeExecutionException){
+                Log.d("errorException",runtimeException.message!!)
             }
         }
     }
