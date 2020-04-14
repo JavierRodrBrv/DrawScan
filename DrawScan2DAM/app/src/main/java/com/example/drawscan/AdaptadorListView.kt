@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Filterable
+import android.widget.ImageView
 import android.widget.TextView
 import com.example.drawscan.clases.DatosCamara
 import com.example.drawscan.fragmentos.PantallaFragments
@@ -20,6 +21,8 @@ class AdaptadorListView(contexto: Context, resource: Int, lista: ArrayList<Datos
     private lateinit var textoTituloFoto: TextView//Textview con el titulo de la foto.
     private lateinit var textoFecha: TextView//Textview con la fecha.
     private lateinit var porcentajeFoto: TextView//Textview donde muestra el porcentaje de similitud.
+    private lateinit var fotoImagen: ImageView//
+    private lateinit var main: MainActivity // Esta es la actividad inicial.
 
     private var listaDatos: ArrayList<DatosCamara>? = null// ArrayList de datos escaneados
     private var fullLista: ArrayList<DatosCamara>? =
@@ -42,6 +45,17 @@ class AdaptadorListView(contexto: Context, resource: Int, lista: ArrayList<Datos
 
         val inflater = (contextoAplicacion as Activity).layoutInflater
         val vistaElemento = inflater.inflate(R.layout.elemento_lista, null)
+        main = MainActivity()
+        textoTituloFoto = view!!.findViewById(R.id.idTituloFoto) as TextView
+        textoFecha = view.findViewById(R.id.idFecha) as TextView
+        porcentajeFoto = view.findViewById(R.id.idPorcentaje) as TextView
+        fotoImagen=view.findViewById(R.id.idImagenFoto) as ImageView
+        botonFavorito=view.findViewById(R.id.botonFavorito) as LikeButton
+
+        textoTituloFoto.setText(listaDatos!!.get(position).tituloImagen)
+        textoFecha.setText(listaDatos!!.get(position).dias)
+
+
 
         return vistaElemento
     }

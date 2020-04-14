@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class DatosCamara(var tituloImagen: String, var porcentaje: Int?) {
-    private var dias: String
+    var dias: String
     var favorito: Boolean? = null
 
     init {
