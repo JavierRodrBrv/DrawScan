@@ -4,10 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.Filterable
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import com.example.drawscan.clases.DatosCamara
 import com.example.drawscan.fragmentos.PantallaFragments
 import com.like.LikeButton
@@ -53,10 +50,82 @@ class AdaptadorListView(contexto: Context, resource: Int, lista: ArrayList<Datos
         botonFavorito=view.findViewById(R.id.botonFavorito) as LikeButton
 
         textoTituloFoto.setText(listaDatos!!.get(position).tituloImagen)
+        porcentajeFoto.text=listaDatos!!.get(position).porcentaje.toString()
         textoFecha.setText(listaDatos!!.get(position).dias)
 
 
+        //añadir preferencia modo oscuro aqui.
+
+
+        botonFavorito.setOnClickListener(object:View.OnClickListener{
+            override fun onClick(v: View?) {
+                if(!listaDatos!!.get(position).favorito!!){
+                    listaDatos!!.get(position).favorito=true
+                    //añadir referencia firebase
+                    Toast.makeText(contextoAplicacion,listaDatos!!.get(position).tituloImagen+": añadido favorito",Toast.LENGTH_LONG).show()
+                }else{
+                    listaDatos!!.get(position).favorito=false
+                    //añadir referencia firebase
+                    Toast.makeText(contextoAplicacion,listaDatos!!.get(position).tituloImagen+": borrado favorito",Toast.LENGTH_LONG).show()
+
+                }
+            }
+        })
 
         return vistaElemento
     }
+
+
+    override fun getFilter(): Filter {
+        return super.getFilter()
+    }
+
+    private val filertBueno: Filter = object : Filter() {
+        override fun performFiltering(constraint: CharSequence): FilterResults {
+            val results = FilterResults()
+            val lista2: ArrayList<DatosCamara> = arrayListOf()
+            if (constraint == null || constraint.length == 0) {
+                lista2.addAll(fullLista!!)
+            } else {
+                val filter = constraint.toString().toLowerCase().trim { it <= ' ' }
+                for (date in lista) {
+                    if (date.tituloImagen.toLowerCase().contains(filter)) {
+                        lista2.add(date)
+                    }
+                }
+                results.values = lista2
+                return results
+            }
+            results.values = lista2
+            return results
+        }
+
+        override fun publishResults(
+            constraint: CharSequence,
+            results: FilterResults
+        ) {
+            lista.clear()
+            lista.addAll(results.values as ArrayList<DatosCamara>)
+            notifyDataSetChanged()
+        }
+    }
+
+
+    /**
+     * Función que cuenta el nº de elementos que contiene el listview
+     * @return Nº de elementos del listview
+     */
+    override fun getCount(): Int {
+        return listaDatos!!.size
+    }
+
+    /**
+     * Función que devuelve el id del elemento del listview
+     * @param i Posicion del elemento
+     * @return 0
+     */
+    override fun getItemId(i: Int): Long {
+        return 0
+    }
+
 }
