@@ -15,6 +15,7 @@
         android:drawableStart="@drawable/icono_exit"
         android:shadowRadius="15"
         android:text="@string/cerrarSesionGoogle"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -27,6 +28,8 @@
         android:layout_height="wrap_content"
         android:text="@string/switchModoOscuro"
         android:background="@drawable/boton_redondo"
+        style="@style/estiloTextoNegro"
+        android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@+id/botonCerrarSesion"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

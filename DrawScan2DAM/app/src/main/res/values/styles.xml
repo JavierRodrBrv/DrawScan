@@ -12,4 +12,18 @@
         <item name="android:textColor">@color/colorPrimary</item>
         <item name="android:textSize">20sp</item>
     </style>
+
+    <style name="estiloTextoBlanco" >
+        <item name="android:textColor">@color/colorBlanco</item>
+        <item name="android:textSize">30sp</item>
+        <item name="android:shadowDx">3</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">1.8</item>
+        <item name="fontFamily">@font/minimal</item>
+    </style>
+
+    <style name="estiloTextoNegro" parent="estiloTextoBlanco" >
+        <item name="android:textColor">@color/colorNegro</item>
+        <item name="android:textSize">20sp</item>
+    </style>
 </resources>
