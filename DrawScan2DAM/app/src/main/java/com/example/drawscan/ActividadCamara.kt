@@ -1,9 +1,12 @@
 package com.example.drawscan
 
 import android.Manifest
+import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -13,6 +16,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.theartofdev.edmodo.cropper.CropImage
+import com.theartofdev.edmodo.cropper.CropImageView
 
 class ActividadCamara : AppCompatActivity() {
     private lateinit var bundle: Bundle //Este bundle es para devolver los datos a la otra actividad.
@@ -36,6 +41,8 @@ class ActividadCamara : AppCompatActivity() {
         barraProgreso = findViewById(R.id.idProgressBar)
         //aqui va firebase..
 
+        bundle = intent.extras!!;
+        activarCamara()
     }
 
     /**
@@ -96,8 +103,15 @@ class ActividadCamara : AppCompatActivity() {
         if (!comprobarPermisosCamara()) {
             // Si no tenemos los permisos necesarios para llevar a cabo la actividad, se lo pedimos
             pedirPermisosCamara()
-            if (!ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.CAMERA) ||
-                !ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(
+                    this,
+                    Manifest.permission.CAMERA
+                ) ||
+                !ActivityCompat.shouldShowRequestPermissionRationale(
+                    this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
+            ) {
 
             }
         } else {
@@ -122,6 +136,42 @@ class ActividadCamara : AppCompatActivity() {
 
     //Hacer el activityOnResult, donde haremos el calculo del porcentaje.
 
+    /**
+     * Devuelve el resultado del intent
+     * @param requestCode Código del permiso que hemos solicitado
+     * @param resultCode Código del resultado de la actividad
+     * @param data No nos hace falta para este caso
+     */
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
+        // Vamos a recibir la imagen de la cámara
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == cogerImagenCamaraID) {
+                // Cuando cogemos la imagen de la cámara, le hacemos crop a la imagen
+                CropImage.activity(uri_imagen)
+                    .setGuidelines(CropImageView.Guidelines.ON)
+                    .start(this)
+            }
+        }
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            val imagenCrop = CropImage.getActivityResult(data)
+            if (resultCode == Activity.RESULT_OK) {
+                val imagenCropUri = imagenCrop.uri // Conseguir la uri de la imagen cropeada
+                // Ponemos esa imagen cropeada en ImageView
+                imagenCamaraAux.setImageURI(imagenCropUri)
+
+                //Para el reconocimineto de imagen, necesitamos convertirlo en una imagen drawable Bitmap
+                val bmd: BitmapDrawable = imagenCamaraAux.drawable as BitmapDrawable
+                val bm: Bitmap=bmd.bitmap
+
+
+                //Ahora deberia de ir el calculo de la comparación
+
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data)
+    }
 
     /**
      * Función que muestra un diálogo de error en el caso de que no encuentra la clase en el texto esacaneado
