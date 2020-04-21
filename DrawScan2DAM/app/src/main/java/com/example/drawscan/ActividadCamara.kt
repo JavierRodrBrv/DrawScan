@@ -183,8 +183,9 @@ class ActividadCamara : AppCompatActivity() {
                     var p:Double? = getDifferencePercent(img1!!, img2!!)
 
                     if(p != null){
-                        p=100-p;
-                        Toast.makeText(this,p.toString(),Toast.LENGTH_LONG).show()
+                        p=100-p
+                        val numeroRedondeado=Math.round((p)*100.00)/100.00
+                        Toast.makeText(this,numeroRedondeado.toString()+"%",Toast.LENGTH_LONG).show()
                     }
 
                     Imagenes.imagen1=null
@@ -203,16 +204,15 @@ class ActividadCamara : AppCompatActivity() {
     }
 
 
-
+    /**
+     * Esta función es la que calcula las dos imagenes.
+     */
     fun getDifferencePercent(img1: Bitmap, img2: Bitmap): Double? {
 
-        var img1e=Bitmap.createScaledBitmap(img1,2400,3200,false)
-        var img2e=Bitmap.createScaledBitmap(img1,2400,3200,false)
-
-        val width = img1e.width
-        val height = img1e.height
-        val width2 = img2e.width
-        val height2 = img2e.height
+        val width = img1.width
+        val height = img1.height
+        val width2 = img2.width
+        val height2 = img2.height
         if (width != width2 || height != height2) {
             val f = "(%d,%d) vs. (%d,%d)".format(width, height, width2, height2)
             Toast.makeText(this,"Las dimensiones de las imagenes tienen que ser iguales $f",Toast.LENGTH_LONG).show()
@@ -232,6 +232,9 @@ class ActividadCamara : AppCompatActivity() {
         return null
     }
 
+    /**
+     * Función que clasifica los pixeles con sus respectivos colores.
+     */
     fun pixelDiff(rgb1: Int, rgb2: Int): Int {
         val r1 = (rgb1 shr 16) and 0xff
         val g1 = (rgb1 shr 8)  and 0xff
