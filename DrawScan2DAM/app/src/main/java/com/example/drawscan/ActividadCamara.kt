@@ -6,18 +6,24 @@ import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
+import android.media.Image
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.example.drawscan.globales.Imagenes
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
+import java.lang.Math.abs
 
 class ActividadCamara : AppCompatActivity() {
     private lateinit var bundle: Bundle //Este bundle es para devolver los datos a la otra actividad.
@@ -27,6 +33,7 @@ class ActividadCamara : AppCompatActivity() {
     private val camaraIDPermision = 300 // Código para los permisos de la cámara
     private val cogerImagenCamaraID = 300 // Código para los permisos de recortar el imagen
     private lateinit var barraProgreso: ProgressBar // La barra de progreso
+    private var capturaImagen2 = false
 
     //Aqui viene las variables de firebase.
 
@@ -41,7 +48,6 @@ class ActividadCamara : AppCompatActivity() {
         barraProgreso = findViewById(R.id.idProgressBar)
         //aqui va firebase..
 
-        bundle = intent.extras!!;
         activarCamara()
     }
 
@@ -134,7 +140,6 @@ class ActividadCamara : AppCompatActivity() {
         startActivityForResult(camara, cogerImagenCamaraID)
     }
 
-    //Hacer el activityOnResult, donde haremos el calculo del porcentaje.
 
     /**
      * Devuelve el resultado del intent
@@ -162,10 +167,34 @@ class ActividadCamara : AppCompatActivity() {
 
                 //Para el reconocimineto de imagen, necesitamos convertirlo en una imagen drawable Bitmap
                 val bmd: BitmapDrawable = imagenCamaraAux.drawable as BitmapDrawable
-                val bm: Bitmap=bmd.bitmap
 
+                if(!capturaImagen2){
+                    Imagenes.imagen1=bmd.bitmap
+                    capturaImagen2=true
+                }else{
+                    Imagenes.imagen2=bmd.bitmap
+                    capturaImagen2=false
+                }
 
-                //Ahora deberia de ir el calculo de la comparación
+                if(Imagenes.imagen1!=null && Imagenes.imagen2!=null){
+
+                    val img1 = Imagenes.imagen1
+                    val img2 = Imagenes.imagen2
+                    var p:Double? = getDifferencePercent(img1!!, img2!!)
+
+                    if(p != null){
+                        p=100-p;
+                        Toast.makeText(this,p.toString(),Toast.LENGTH_LONG).show()
+                    }
+
+                    Imagenes.imagen1=null
+                    Imagenes.imagen2=null
+                    finish()
+                }else{
+                    Toast.makeText(this,"Vamos a por la segunda foto",Toast.LENGTH_LONG).show()
+                    activarCamara()
+                }
+
 
             }
         }
@@ -173,24 +202,44 @@ class ActividadCamara : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    /**
-     * Función que muestra un diálogo de error en el caso de que no encuentra la clase en el texto esacaneado
-     */
-    fun errorEscaneando() {
-        val dialogo =
-            AlertDialog.Builder(this)
-        dialogo.setIcon(R.drawable.icono_alerta)
-        dialogo.setTitle(resources.getString(R.string.tituloEscaner))
-        dialogo.setMessage(resources.getString(R.string.mensajeEscaner))
-        dialogo.setPositiveButton(
-            resources.getString(R.string.botonOK)
-        ) { dialog, which ->
-            val paginaInicio =
-                Intent(applicationContext, MainActivity::class.java)
-            paginaInicio.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            startActivity(paginaInicio)
+
+
+    fun getDifferencePercent(img1: Bitmap, img2: Bitmap): Double? {
+
+        var img1e=Bitmap.createScaledBitmap(img1,2400,3200,false)
+        var img2e=Bitmap.createScaledBitmap(img1,2400,3200,false)
+
+        val width = img1e.width
+        val height = img1e.height
+        val width2 = img2e.width
+        val height2 = img2e.height
+        if (width != width2 || height != height2) {
+            val f = "(%d,%d) vs. (%d,%d)".format(width, height, width2, height2)
+            Toast.makeText(this,"Las dimensiones de las imagenes tienen que ser iguales $f",Toast.LENGTH_LONG).show()
+            println("Las dimensiones de las imagenes tienen que ser iguales $f")
+        }else{
+            var diff = 0L
+
+            for (y in 0 until height) {
+                for (x in 0 until width) {
+
+                    diff += pixelDiff(img1.getPixel(x,y),img2.getPixel(x,y))
+                }
+            }
+            val maxDiff = 3L * 255 * width * height
+            return 100.0 * diff / maxDiff
         }
-        dialogo.show()
+        return null
+    }
+
+    fun pixelDiff(rgb1: Int, rgb2: Int): Int {
+        val r1 = (rgb1 shr 16) and 0xff
+        val g1 = (rgb1 shr 8)  and 0xff
+        val b1 =  rgb1         and 0xff
+        val r2 = (rgb2 shr 16) and 0xff
+        val g2 = (rgb2 shr 8)  and 0xff
+        val b2 =  rgb2         and 0xff
+        return abs(r1 - r2) + abs(g1 - g2) + abs(b1 - b2)
     }
 
 

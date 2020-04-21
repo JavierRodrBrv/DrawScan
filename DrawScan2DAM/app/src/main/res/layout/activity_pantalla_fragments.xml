@@ -37,6 +37,7 @@
         android:clickable="true"
         android:focusable="true"
         android:layout_margin="10dp"
+
         app:backgroundTint="@color/colorFondoCamara"
         app:fabSize="auto"
         app:srcCompat="@drawable/camara" />

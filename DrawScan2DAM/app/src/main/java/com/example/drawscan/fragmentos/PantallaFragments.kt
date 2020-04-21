@@ -1,8 +1,11 @@
 package com.example.drawscan.fragmentos
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
+import com.example.drawscan.ActividadCamara
 import com.example.drawscan.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
@@ -10,8 +13,8 @@ import com.google.android.material.tabs.TabLayout
 class PantallaFragments : AppCompatActivity() {
     private lateinit var adapter: AdapterParaFragmentos// Adapter utilizado para los fragmentos
     private lateinit var viewPager: ViewPager // Despalzar los fragmentos deslizando hacia la izquierda o derecha
-    private lateinit var botonCamara: FloatingActionButton //Boton que dirige a la camara
     private lateinit var tb: TabLayout // Layout del tab
+    private val botonCamara by lazy { findViewById<FloatingActionButton>(R.id.floatingActionButton) }
     private var modoDark : Boolean = false// Switch para cambiar el modo osucro
 
 
@@ -23,7 +26,6 @@ class PantallaFragments : AppCompatActivity() {
             supportFragmentManager
         )
         viewPager = findViewById(R.id.viewPager)
-        botonCamara = findViewById(R.id.floatingActionButton)
         tb = findViewById(R.id.Tabs)
         crearViewPager(viewPager)
         tb.setupWithViewPager(viewPager) // Mete el viewPager creado dentro del TabLayout
@@ -32,6 +34,15 @@ class PantallaFragments : AppCompatActivity() {
         tb.getTabAt(0)!!.icon = getDrawable(R.drawable.icono_historial)
         tb.getTabAt(1)!!.icon = getDrawable(R.drawable.icono_favoritos)
         tb.getTabAt(2)!!.icon = getDrawable(R.drawable.icono_ajustes)
+
+        botonCamara.setOnClickListener(object : View.OnClickListener{
+            override fun onClick(v: View?) {
+
+                val intentCamara =Intent(applicationContext, ActividadCamara::class.java)
+                startActivity(intentCamara)
+            }
+        })
+
 
     }
 
@@ -54,4 +65,5 @@ class PantallaFragments : AppCompatActivity() {
     override fun onBackPressed() {
         finishAffinity()
     }
+
 }
