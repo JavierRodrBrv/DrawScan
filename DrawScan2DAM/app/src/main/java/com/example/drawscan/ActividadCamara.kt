@@ -6,18 +6,14 @@ import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.Color
+import android.graphics.Matrix
 import android.graphics.drawable.BitmapDrawable
-import android.media.Image
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.drawscan.globales.Imagenes
@@ -186,6 +182,7 @@ class ActividadCamara : AppCompatActivity() {
                         p=100-p
                         val numeroRedondeado=Math.round((p)*100.00)/100.00
                         Toast.makeText(this,numeroRedondeado.toString()+"%",Toast.LENGTH_LONG).show()
+                        println("${img1.width},${img1.height} ${img2.width},${img2.height}")
                     }
 
                     Imagenes.imagen1=null
@@ -197,6 +194,14 @@ class ActividadCamara : AppCompatActivity() {
                 }
 
 
+            }else{
+
+                // Esto se ejecuta en el caso de que en la opcion de recortar la imagen, el usuario quiere volver a la camara
+                finish()
+                val bundleParaReiniciarActividad = Bundle()
+                val reiniciarActividad = Intent(this, ActividadCamara::class.java)
+                reiniciarActividad.putExtras(bundleParaReiniciarActividad)
+                startActivity(reiniciarActividad)
             }
         }
 
@@ -209,10 +214,16 @@ class ActividadCamara : AppCompatActivity() {
      */
     fun getDifferencePercent(img1: Bitmap, img2: Bitmap): Double? {
 
-        val width = img1.width
-        val height = img1.height
-        val width2 = img2.width
-        val height2 = img2.height
+
+        val nuevaDimension=getResizedBitmap(img1,768,768)
+        val nuevaDimension2=getResizedBitmap(img2,768,768)
+        println("${nuevaDimension!!.width},${nuevaDimension.height} ${nuevaDimension2!!.width},${nuevaDimension2.height}")
+
+
+        val width = nuevaDimension!!.width
+        val height = nuevaDimension.height
+        val width2 = nuevaDimension2!!.width
+        val height2 = nuevaDimension2.height
         if (width != width2 || height != height2) {
             val f = "(%d,%d) vs. (%d,%d)".format(width, height, width2, height2)
             Toast.makeText(this,"Las dimensiones de las imagenes tienen que ser iguales $f",Toast.LENGTH_LONG).show()
@@ -223,7 +234,7 @@ class ActividadCamara : AppCompatActivity() {
             for (y in 0 until height) {
                 for (x in 0 until width) {
 
-                    diff += pixelDiff(img1.getPixel(x,y),img2.getPixel(x,y))
+                    diff += pixelDiff(nuevaDimension.getPixel(x,y),nuevaDimension2.getPixel(x,y))
                 }
             }
             val maxDiff = 3L * 255 * width * height
@@ -231,6 +242,25 @@ class ActividadCamara : AppCompatActivity() {
         }
         return null
     }
+
+    fun getResizedBitmap(bm: Bitmap, newWidth: Int, newHeight: Int): Bitmap? {
+        val width = bm.width
+        val height = bm.height
+        val scaleWidth = newWidth.toFloat() / width
+        val scaleHeight = newHeight.toFloat() / height
+        // CREATE A MATRIX FOR THE MANIPULATION
+        val matrix = Matrix()
+        // RESIZE THE BIT MAP
+        matrix.postScale(scaleWidth, scaleHeight)
+
+        // "RECREATE" THE NEW BITMAP
+        val resizedBitmap = Bitmap.createBitmap(
+            bm, 0, 0, width, height, matrix, false
+        )
+        bm.recycle()
+        return resizedBitmap
+    }
+
 
     /**
      * Función que clasifica los pixeles con sus respectivos colores.
