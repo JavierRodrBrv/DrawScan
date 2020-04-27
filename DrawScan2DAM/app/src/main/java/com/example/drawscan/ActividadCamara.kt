@@ -16,7 +16,10 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.example.drawscan.clases.DatosCamara
+import com.example.drawscan.clases.InicializarInterfaz
 import com.example.drawscan.globales.Imagenes
+import com.example.drawscan.globales.ListaDatos
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import java.lang.Math.abs
@@ -30,6 +33,7 @@ class ActividadCamara : AppCompatActivity() {
     private val cogerImagenCamaraID = 300 // Código para los permisos de recortar el imagen
     private lateinit var barraProgreso: ProgressBar // La barra de progreso
     private var capturaImagen2 = false
+    private lateinit var imagenReferencia : Uri
 
     //Aqui viene las variables de firebase.
 
@@ -156,7 +160,7 @@ class ActividadCamara : AppCompatActivity() {
         }
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             val imagenCrop = CropImage.getActivityResult(data)
-            if (resultCode == Activity.RESULT_OK) {
+            if (resultCode == Activity.RESULT_OK ) {
                 val imagenCropUri = imagenCrop.uri // Conseguir la uri de la imagen cropeada
                 // Ponemos esa imagen cropeada en ImageView
                 imagenCamaraAux.setImageURI(imagenCropUri)
@@ -165,6 +169,7 @@ class ActividadCamara : AppCompatActivity() {
                 val bmd: BitmapDrawable = imagenCamaraAux.drawable as BitmapDrawable
 
                 if(!capturaImagen2){
+                    imagenReferencia=imagenCropUri
                     Imagenes.imagen1=bmd.bitmap
                     capturaImagen2=true
                 }else{
@@ -181,9 +186,13 @@ class ActividadCamara : AppCompatActivity() {
                     if(p != null){
                         p=100-p
                         val numeroRedondeado=Math.round((p)*100.00)/100.00
-                        Toast.makeText(this,numeroRedondeado.toString()+"%",Toast.LENGTH_LONG).show()
                         println("${img1.width},${img1.height} ${img2.width},${img2.height}")
+                        //Agregamos los datos a la lista global.
+                        ListaDatos.listaDatos.add(DatosCamara("tituloPrueba",numeroRedondeado,imagenReferencia))
+                        InicializarInterfaz.setArray(ListaDatos.listaDatos)
+
                     }
+
 
                     Imagenes.imagen1=null
                     Imagenes.imagen2=null
@@ -274,6 +283,7 @@ class ActividadCamara : AppCompatActivity() {
         val b2 =  rgb2         and 0xff
         return abs(r1 - r2) + abs(g1 - g2) + abs(b1 - b2)
     }
+
 
 
 }

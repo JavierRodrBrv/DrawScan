@@ -5,11 +5,13 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import com.bumptech.glide.Glide
 import com.example.drawscan.clases.DatosCamara
 import com.example.drawscan.fragmentos.PantallaFragments
+import com.example.drawscan.globales.ListaDatos
 import com.like.LikeButton
 
-class AdaptadorListView(contexto: Context, resource: Int, lista: ArrayList<DatosCamara>) :
+class AdaptadorListView(contexto: Context, lista: ArrayList<DatosCamara>) :
     ArrayAdapter<DatosCamara>(contexto, 0, lista), Filterable {
 
     private var contextoAplicacion = contexto
@@ -22,8 +24,7 @@ class AdaptadorListView(contexto: Context, resource: Int, lista: ArrayList<Datos
     private lateinit var main: MainActivity // Esta es la actividad inicial.
 
     private var listaDatos: ArrayList<DatosCamara>? = null// ArrayList de datos escaneados
-    private var fullLista: ArrayList<DatosCamara>? =
-        null// ArrayList de datos escaneados, se usa para el filtro de busqueda.
+    private var fullLista: ArrayList<DatosCamara>? = null// ArrayList de datos escaneados, se usa para el filtro de busqueda.
 
 
     init {
@@ -43,15 +44,18 @@ class AdaptadorListView(contexto: Context, resource: Int, lista: ArrayList<Datos
         val inflater = (contextoAplicacion as Activity).layoutInflater
         val vistaElemento = inflater.inflate(R.layout.elemento_lista, null)
         main = MainActivity()
-        textoTituloFoto = view!!.findViewById(R.id.idTituloFoto) as TextView
-        textoFecha = view.findViewById(R.id.idFecha) as TextView
-        porcentajeFoto = view.findViewById(R.id.idPorcentaje) as TextView
-        fotoImagen=view.findViewById(R.id.idImagenFoto) as ImageView
-        botonFavorito=view.findViewById(R.id.botonFavorito) as LikeButton
+        textoTituloFoto = vistaElemento!!.findViewById(R.id.idTituloFoto) as TextView
+        textoFecha = vistaElemento.findViewById(R.id.idFecha) as TextView
+        porcentajeFoto = vistaElemento.findViewById(R.id.idPorcentaje) as TextView
+        fotoImagen=vistaElemento.findViewById(R.id.idImagenFoto) as ImageView
+        botonFavorito=vistaElemento.findViewById(R.id.botonFavorito) as LikeButton
+
 
         textoTituloFoto.setText(listaDatos!!.get(position).tituloImagen)
         porcentajeFoto.text=listaDatos!!.get(position).porcentaje.toString()
         textoFecha.setText(listaDatos!!.get(position).dias)
+        //Para rellenar con la foto de la referencia en el imageView de elementoLista
+        Glide.with(vistaElemento.context).load(listaDatos!!.get(position).fotoReferencia).into(fotoImagen)
 
 
         //añadir preferencia modo oscuro aqui.

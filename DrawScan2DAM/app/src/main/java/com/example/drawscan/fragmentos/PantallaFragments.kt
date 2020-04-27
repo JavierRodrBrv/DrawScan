@@ -4,9 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import com.example.drawscan.ActividadCamara
 import com.example.drawscan.R
+import com.example.drawscan.modalview.ViewModelCamara
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
 
@@ -16,6 +18,8 @@ class PantallaFragments : AppCompatActivity() {
     private lateinit var tb: TabLayout // Layout del tab
     private val botonCamara by lazy { findViewById<FloatingActionButton>(R.id.floatingActionButton) }
     private var modoDark : Boolean = false// Switch para cambiar el modo osucro
+    private lateinit var camaraLiveData: ViewModelCamara //Este View-Model es el que utilizamos para rellenar la lista con los datos de la camara.
+
 
 
 
@@ -29,6 +33,9 @@ class PantallaFragments : AppCompatActivity() {
         tb = findViewById(R.id.Tabs)
         crearViewPager(viewPager)
         tb.setupWithViewPager(viewPager) // Mete el viewPager creado dentro del TabLayout
+
+        camaraLiveData=ViewModelProvider(this).get(ViewModelCamara::class.java)
+
 
         // Meter iconos del tab
         tb.getTabAt(0)!!.icon = getDrawable(R.drawable.icono_historial)
