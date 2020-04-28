@@ -9,20 +9,17 @@ import com.bumptech.glide.Glide
 import com.example.drawscan.clases.DatosCamara
 import com.example.drawscan.fragmentos.PantallaFragments
 import com.example.drawscan.globales.ListaDatos
-import com.like.LikeButton
 
 class AdaptadorListView(contexto: Context, lista: ArrayList<DatosCamara>) :
     ArrayAdapter<DatosCamara>(contexto, 0, lista), Filterable {
 
     private var contextoAplicacion = contexto
     private lateinit var pantallaFragments: PantallaFragments//Actividad donde estan los fragments
-    private lateinit var botonFavorito: LikeButton//Boton que agrega el elemento en favorito.
     private lateinit var textoTituloFoto: TextView//Textview con el titulo de la foto.
     private lateinit var textoFecha: TextView//Textview con la fecha.
     private lateinit var porcentajeFoto: TextView//Textview donde muestra el porcentaje de similitud.
     private lateinit var fotoImagen: ImageView//
     private lateinit var main: MainActivity // Esta es la actividad inicial.
-
     private var listaDatos: ArrayList<DatosCamara>? = null// ArrayList de datos escaneados
     private var fullLista: ArrayList<DatosCamara>? = null// ArrayList de datos escaneados, se usa para el filtro de busqueda.
 
@@ -48,7 +45,7 @@ class AdaptadorListView(contexto: Context, lista: ArrayList<DatosCamara>) :
         textoFecha = vistaElemento.findViewById(R.id.idFecha) as TextView
         porcentajeFoto = vistaElemento.findViewById(R.id.idPorcentaje) as TextView
         fotoImagen=vistaElemento.findViewById(R.id.idImagenFoto) as ImageView
-        botonFavorito=vistaElemento.findViewById(R.id.botonFavorito) as LikeButton
+        //botonFavorito=vistaElemento.findViewById(R.id.botonFavorito) as LikeButton
 
 
         textoTituloFoto.setText(listaDatos!!.get(position).tituloImagen)
@@ -60,21 +57,6 @@ class AdaptadorListView(contexto: Context, lista: ArrayList<DatosCamara>) :
 
         //añadir preferencia modo oscuro aqui.
 
-
-        botonFavorito.setOnClickListener(object:View.OnClickListener{
-            override fun onClick(v: View?) {
-                if(!listaDatos!!.get(position).favorito!!){
-                    listaDatos!!.get(position).favorito=true
-                    //añadir referencia firebase
-                    Toast.makeText(contextoAplicacion,listaDatos!!.get(position).tituloImagen+": añadido favorito",Toast.LENGTH_LONG).show()
-                }else{
-                    listaDatos!!.get(position).favorito=false
-                    //añadir referencia firebase
-                    Toast.makeText(contextoAplicacion,listaDatos!!.get(position).tituloImagen+": borrado favorito",Toast.LENGTH_LONG).show()
-
-                }
-            }
-        })
 
         return vistaElemento
     }

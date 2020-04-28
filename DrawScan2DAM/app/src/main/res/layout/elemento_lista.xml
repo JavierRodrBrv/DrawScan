@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -47,10 +46,10 @@
 
     <TextView
         android:id="@+id/idTituloFoto"
+        style="@style/estiloTextoNegro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TextView"
-        style="@style/estiloTextoNegro"
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintEnd_toStartOf="@+id/guideline4"
         app:layout_constraintStart_toStartOf="parent"
@@ -58,22 +57,22 @@
 
     <TextView
         android:id="@+id/idFechaTitulo"
+        style="@style/estiloTextoNegro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="36dp"
         android:text="@string/fechaConcreta"
-        style="@style/estiloTextoNegro"
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline4"
         app:layout_constraintTop_toTopOf="@+id/guideline" />
 
     <TextView
         android:id="@+id/idFecha"
+        style="@style/estiloTextoNegro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="96dp"
         android:text="TextView"
-        style="@style/estiloTextoNegro"
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/idFechaTitulo"
@@ -81,11 +80,11 @@
 
     <TextView
         android:id="@+id/idTituloPorcentaje"
+        style="@style/estiloTextoNegro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:text="@string/porcentajeExacto"
-        style="@style/estiloTextoNegro"
         app:layout_constraintBottom_toTopOf="@+id/guideline3"
         app:layout_constraintStart_toStartOf="@+id/guideline4"
         app:layout_constraintTop_toTopOf="@+id/guideline2"
@@ -93,30 +92,40 @@
 
     <TextView
         android:id="@+id/idPorcentaje"
+        style="@style/estiloTextoNegro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="TextView"
-        style="@style/estiloTextoNegro"
         app:layout_constraintBottom_toTopOf="@+id/guideline3"
         app:layout_constraintStart_toEndOf="@+id/idTituloPorcentaje"
         app:layout_constraintTop_toTopOf="@+id/guideline2"
         app:layout_constraintVertical_bias="0.519" />
 
-    <com.like.LikeButton
+    <com.sackcentury.shinebuttonlib.ShineButton
         android:id="@+id/botonFavorito"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:icon_size="10dp"
-        app:icon_type="heart"
-        app:anim_scale_factor="2.5"
-        app:circle_start_color="@color/colorFondoCamara"
-        app:circle_end_color="@color/colorPrimary"
-        app:dots_primary_color="@color/colorFondoCamara"
-        app:dots_secondary_color="@color/colorPrimary"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginHorizontal="20dp"
+        app:allow_random_color="false"
+        app:big_shine_color="@color/colorPrimary"
+        app:btn_color="@color/colorBlanco"
+        app:btn_fill_color="@color/colorPrimary"
+        app:click_animation_duration="200"
+        app:enable_flashing="false"
         app:layout_constraintBottom_toTopOf="@+id/guideline3"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/idPorcentaje"
-        app:layout_constraintTop_toTopOf="@+id/guideline2" />
+        app:layout_constraintTop_toTopOf="@+id/guideline2"
+        app:shine_animation_duration="1500"
+        app:shine_count="8"
+        app:shine_distance_multiple="2"
+        app:shine_size="10dp"
+        app:shine_turn_angle="10"
+        app:siShape="@raw/heart"
+        app:small_shine_color="@color/colorPrimary"
+        app:small_shine_offset_angle="20" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
