@@ -16,6 +16,9 @@
     <string name="tituloEscaner">Error</string>
     <string name="mensajeEscaner">No se ha podido realizar bien el calculo. Intentelo de nuevo con una nueva foto</string>
     <string name="botonOK">OK</string>
+    <string name="editTextTituloFoto">Introduce titulo para la foto.</string>
+    <string name="tituloAlerta">Introduce titulo.</string>
+    <string name="opcionAceptarDialogo">Aceptar</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

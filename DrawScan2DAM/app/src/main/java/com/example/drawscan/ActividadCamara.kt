@@ -11,12 +11,14 @@ import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.KeyEvent
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.drawscan.clases.DatosCamara
+import com.example.drawscan.clases.DialogoEditText
 import com.example.drawscan.clases.InicializarInterfaz
 import com.example.drawscan.globales.Imagenes
 import com.example.drawscan.globales.ListaDatos
@@ -24,7 +26,7 @@ import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import java.lang.Math.abs
 
-class ActividadCamara : AppCompatActivity() {
+class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListener {
     private lateinit var bundle: Bundle //Este bundle es para devolver los datos a la otra actividad.
     private var permisosCamara: Array<String> = arrayOf() // Permisos necesarios para la cámara
     private var uri_imagen: Uri? = null // Uri de la imagen
@@ -33,7 +35,9 @@ class ActividadCamara : AppCompatActivity() {
     private val cogerImagenCamaraID = 300 // Código para los permisos de recortar el imagen
     private lateinit var barraProgreso: ProgressBar // La barra de progreso
     private var capturaImagen2 = false
-    private lateinit var imagenReferencia : Uri
+    private lateinit var imagenReferencia: Uri
+    private var tituloFotoDefinitivo: String = ""
+    private var numeroRedondeado: Double = 0.0
 
     //Aqui viene las variables de firebase.
 
@@ -48,7 +52,8 @@ class ActividadCamara : AppCompatActivity() {
         barraProgreso = findViewById(R.id.idProgressBar)
         //aqui va firebase..
 
-        activarCamara()
+        val dialogoEditText = DialogoEditText(this)
+        dialogoEditText.show(supportFragmentManager, "")
     }
 
     /**
@@ -160,7 +165,7 @@ class ActividadCamara : AppCompatActivity() {
         }
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             val imagenCrop = CropImage.getActivityResult(data)
-            if (resultCode == Activity.RESULT_OK ) {
+            if (resultCode == Activity.RESULT_OK) {
                 val imagenCropUri = imagenCrop.uri // Conseguir la uri de la imagen cropeada
                 // Ponemos esa imagen cropeada en ImageView
                 imagenCamaraAux.setImageURI(imagenCropUri)
@@ -168,42 +173,49 @@ class ActividadCamara : AppCompatActivity() {
                 //Para el reconocimineto de imagen, necesitamos convertirlo en una imagen drawable Bitmap
                 val bmd: BitmapDrawable = imagenCamaraAux.drawable as BitmapDrawable
 
-                if(!capturaImagen2){
-                    imagenReferencia=imagenCropUri
-                    Imagenes.imagen1=bmd.bitmap
-                    capturaImagen2=true
-                }else{
-                    Imagenes.imagen2=bmd.bitmap
-                    capturaImagen2=false
+                if (!capturaImagen2) {
+                    imagenReferencia = imagenCropUri
+                    Imagenes.imagen1 = bmd.bitmap
+                    capturaImagen2 = true
+                } else {
+                    Imagenes.imagen2 = bmd.bitmap
+                    capturaImagen2 = false
                 }
 
-                if(Imagenes.imagen1!=null && Imagenes.imagen2!=null){
+                if (Imagenes.imagen1 != null && Imagenes.imagen2 != null) {
 
                     val img1 = Imagenes.imagen1
                     val img2 = Imagenes.imagen2
-                    var p:Double? = getDifferencePercent(img1!!, img2!!)
+                    var p: Double? = getDifferencePercent(img1!!, img2!!)
 
-                    if(p != null){
-                        p=100-p
-                        val numeroRedondeado=Math.round((p)*100.00)/100.00
+                    if (p != null) {
+                        p = 100 - p
+                        numeroRedondeado = Math.round((p) * 100.00) / 100.00
                         println("${img1.width},${img1.height} ${img2.width},${img2.height}")
-                        //Agregamos los datos a la lista global.
-                        ListaDatos.listaDatos.add(DatosCamara("tituloPrueba",numeroRedondeado,imagenReferencia))
-                        InicializarInterfaz.setArray(ListaDatos.listaDatos)
 
+
+
+                        ListaDatos.listaDatos.add(
+                            DatosCamara(
+                                tituloFotoDefinitivo,
+                                numeroRedondeado,
+                                imagenReferencia
+                            )
+                        )
+                        InicializarInterfaz.setArray(ListaDatos.listaDatos)
+                        Imagenes.imagen1 = null
+                        Imagenes.imagen2 = null
+                        finish()
                     }
 
 
-                    Imagenes.imagen1=null
-                    Imagenes.imagen2=null
-                    finish()
-                }else{
-                    Toast.makeText(this,"Vamos a por la segunda foto",Toast.LENGTH_LONG).show()
+                } else {
+                    Toast.makeText(this, "Vamos a por la segunda foto", Toast.LENGTH_LONG).show()
                     activarCamara()
                 }
 
 
-            }else{
+            } else {
 
                 // Esto se ejecuta en el caso de que en la opcion de recortar la imagen, el usuario quiere volver a la camara
                 finish()
@@ -224,8 +236,8 @@ class ActividadCamara : AppCompatActivity() {
     fun getDifferencePercent(img1: Bitmap, img2: Bitmap): Double? {
 
 
-        val nuevaDimension=getResizedBitmap(img1,768,768)
-        val nuevaDimension2=getResizedBitmap(img2,768,768)
+        val nuevaDimension = getResizedBitmap(img1, 768, 768)
+        val nuevaDimension2 = getResizedBitmap(img2, 768, 768)
         println("${nuevaDimension!!.width},${nuevaDimension.height} ${nuevaDimension2!!.width},${nuevaDimension2.height}")
 
 
@@ -235,15 +247,19 @@ class ActividadCamara : AppCompatActivity() {
         val height2 = nuevaDimension2.height
         if (width != width2 || height != height2) {
             val f = "(%d,%d) vs. (%d,%d)".format(width, height, width2, height2)
-            Toast.makeText(this,"Las dimensiones de las imagenes tienen que ser iguales $f",Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                this,
+                "Las dimensiones de las imagenes tienen que ser iguales $f",
+                Toast.LENGTH_LONG
+            ).show()
             println("Las dimensiones de las imagenes tienen que ser iguales $f")
-        }else{
+        } else {
             var diff = 0L
 
             for (y in 0 until height) {
                 for (x in 0 until width) {
 
-                    diff += pixelDiff(nuevaDimension.getPixel(x,y),nuevaDimension2.getPixel(x,y))
+                    diff += pixelDiff(nuevaDimension.getPixel(x, y), nuevaDimension2.getPixel(x, y))
                 }
             }
             val maxDiff = 3L * 255 * width * height
@@ -276,13 +292,34 @@ class ActividadCamara : AppCompatActivity() {
      */
     fun pixelDiff(rgb1: Int, rgb2: Int): Int {
         val r1 = (rgb1 shr 16) and 0xff
-        val g1 = (rgb1 shr 8)  and 0xff
-        val b1 =  rgb1         and 0xff
+        val g1 = (rgb1 shr 8) and 0xff
+        val b1 = rgb1 and 0xff
         val r2 = (rgb2 shr 16) and 0xff
-        val g2 = (rgb2 shr 8)  and 0xff
-        val b2 =  rgb2         and 0xff
+        val g2 = (rgb2 shr 8) and 0xff
+        val b2 = rgb2 and 0xff
         return abs(r1 - r2) + abs(g1 - g2) + abs(b1 - b2)
     }
+
+    override fun aplicarTitulo(tituloFoto: String?) {
+        tituloFotoDefinitivo = tituloFoto!!
+        activarCamara()
+
+    }
+
+    override fun acabarActividad() {
+        finish()
+
+    }
+
+    override fun onBackPressed() {
+        /*
+        Toast.makeText(this,"Intento de salir",Toast.LENGTH_LONG).show()
+        val intent=Intent(this,PantallaFragments::class.java)
+        intent.flags=Intent.FLAG_ACTIVITY_CLEAR_TOP
+        startActivity(intent)*/
+        acabarActividad()
+    }
+
 
 
 
