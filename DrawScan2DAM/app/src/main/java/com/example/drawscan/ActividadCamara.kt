@@ -20,6 +20,7 @@ import androidx.core.app.ActivityCompat
 import com.example.drawscan.clases.DatosCamara
 import com.example.drawscan.clases.DialogoEditText
 import com.example.drawscan.clases.InicializarInterfaz
+import com.example.drawscan.fragmentos.PantallaFragments
 import com.example.drawscan.globales.Imagenes
 import com.example.drawscan.globales.ListaDatos
 import com.theartofdev.edmodo.cropper.CropImage
@@ -162,70 +163,69 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
                     .setGuidelines(CropImageView.Guidelines.ON)
                     .start(this)
             }
-        }
-        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-            val imagenCrop = CropImage.getActivityResult(data)
-            if (resultCode == Activity.RESULT_OK) {
-                val imagenCropUri = imagenCrop.uri // Conseguir la uri de la imagen cropeada
-                // Ponemos esa imagen cropeada en ImageView
-                imagenCamaraAux.setImageURI(imagenCropUri)
+            if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+                val imagenCrop = CropImage.getActivityResult(data)
+                if (resultCode == Activity.RESULT_OK) {
+                    val imagenCropUri = imagenCrop.uri // Conseguir la uri de la imagen cropeada
+                    // Ponemos esa imagen cropeada en ImageView
+                    imagenCamaraAux.setImageURI(imagenCropUri)
 
-                //Para el reconocimineto de imagen, necesitamos convertirlo en una imagen drawable Bitmap
-                val bmd: BitmapDrawable = imagenCamaraAux.drawable as BitmapDrawable
+                    //Para el reconocimineto de imagen, necesitamos convertirlo en una imagen drawable Bitmap
+                    val bmd: BitmapDrawable = imagenCamaraAux.drawable as BitmapDrawable
 
-                if (!capturaImagen2) {
-                    imagenReferencia = imagenCropUri
-                    Imagenes.imagen1 = bmd.bitmap
-                    capturaImagen2 = true
-                } else {
-                    Imagenes.imagen2 = bmd.bitmap
-                    capturaImagen2 = false
-                }
-
-                if (Imagenes.imagen1 != null && Imagenes.imagen2 != null) {
-
-                    val img1 = Imagenes.imagen1
-                    val img2 = Imagenes.imagen2
-                    var p: Double? = getDifferencePercent(img1!!, img2!!)
-
-                    if (p != null) {
-                        p = 100 - p
-                        numeroRedondeado = Math.round((p) * 100.00) / 100.00
-                        println("${img1.width},${img1.height} ${img2.width},${img2.height}")
-
-
-
-                        ListaDatos.listaDatos.add(
-                            DatosCamara(
-                                tituloFotoDefinitivo,
-                                numeroRedondeado,
-                                imagenReferencia
-                            )
-                        )
-                        InicializarInterfaz.setArray(ListaDatos.listaDatos)
-                        Imagenes.imagen1 = null
-                        Imagenes.imagen2 = null
-                        finish()
+                    if (!capturaImagen2) {
+                        imagenReferencia = imagenCropUri
+                        Imagenes.imagen1 = bmd.bitmap
+                        capturaImagen2 = true
+                    } else {
+                        Imagenes.imagen2 = bmd.bitmap
+                        capturaImagen2 = false
                     }
 
+                    if (Imagenes.imagen1 != null && Imagenes.imagen2 != null) {
+
+                        val img1 = Imagenes.imagen1
+                        val img2 = Imagenes.imagen2
+                        var p: Double? = getDifferencePercent(img1!!, img2!!)
+
+                        if (p != null) {
+                            p = 100 - p
+                            numeroRedondeado = Math.round((p) * 100.00) / 100.00
+                            println("${img1.width},${img1.height} ${img2.width},${img2.height}")
+                            ListaDatos.listaDatos.add(
+                                DatosCamara(
+                                    tituloFotoDefinitivo,
+                                    numeroRedondeado,
+                                    imagenReferencia
+                                )
+                            )
+                            InicializarInterfaz.setArray(ListaDatos.listaDatos)
+                            Imagenes.imagen1 = null
+                            Imagenes.imagen2 = null
+                            finish()
+                        }
+
+
+                    } else {
+                        Toast.makeText(this, "Vamos a por la segunda foto", Toast.LENGTH_LONG)
+                            .show()
+                        activarCamara()
+                    }
 
                 } else {
-                    Toast.makeText(this, "Vamos a por la segunda foto", Toast.LENGTH_LONG).show()
-                    activarCamara()
+
+                    // Esto se ejecuta en el caso de que en la opcion de recortar la imagen, el usuario quiere volver a la camara
+                    finish()
+                    val bundleParaReiniciarActividad = Bundle()
+                    val reiniciarActividad = Intent(this, ActividadCamara::class.java)
+                    reiniciarActividad.putExtras(bundleParaReiniciarActividad)
+                    startActivity(reiniciarActividad)
                 }
-
-
-            } else {
-
-                // Esto se ejecuta en el caso de que en la opcion de recortar la imagen, el usuario quiere volver a la camara
-                finish()
-                val bundleParaReiniciarActividad = Bundle()
-                val reiniciarActividad = Intent(this, ActividadCamara::class.java)
-                reiniciarActividad.putExtras(bundleParaReiniciarActividad)
-                startActivity(reiniciarActividad)
             }
-        }
 
+        } else {
+            onBackPressed()
+        }
         super.onActivityResult(requestCode, resultCode, data)
     }
 
@@ -308,19 +308,14 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
 
     override fun acabarActividad() {
         finish()
-
     }
 
     override fun onBackPressed() {
-        /*
-        Toast.makeText(this,"Intento de salir",Toast.LENGTH_LONG).show()
-        val intent=Intent(this,PantallaFragments::class.java)
-        intent.flags=Intent.FLAG_ACTIVITY_CLEAR_TOP
-        startActivity(intent)*/
-        acabarActividad()
+        Toast.makeText(this, "Intento de salir", Toast.LENGTH_LONG).show()
+        val intent = Intent(this, PantallaFragments::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        startActivity(intent)
     }
-
-
 
 
 }
