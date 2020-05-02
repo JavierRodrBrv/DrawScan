@@ -19,6 +19,8 @@
     <string name="editTextTituloFoto">Introduce titulo para la foto.</string>
     <string name="tituloAlerta">Introduce titulo.</string>
     <string name="opcionAceptarDialogo">Aceptar</string>
+    <string name="opcionCancelarDialogo">Cancelar</string>
+    <string name="descripcionDialogo">Introduce el titulo que quieras ponerle a esta comparacion.</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

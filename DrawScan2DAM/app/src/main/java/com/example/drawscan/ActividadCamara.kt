@@ -300,6 +300,8 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
         return abs(r1 - r2) + abs(g1 - g2) + abs(b1 - b2)
     }
 
+
+
     override fun aplicarTitulo(tituloFoto: String?) {
         tituloFotoDefinitivo = tituloFoto!!
         activarCamara()
