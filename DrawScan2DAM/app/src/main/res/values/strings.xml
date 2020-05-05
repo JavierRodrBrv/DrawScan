@@ -17,10 +17,10 @@
     <string name="mensajeEscaner">No se ha podido realizar bien el calculo. Intentelo de nuevo con una nueva foto</string>
     <string name="botonOK">OK</string>
     <string name="editTextTituloFoto">Introduce titulo para la foto.</string>
-    <string name="tituloAlerta">Introduce titulo.</string>
+    <string name="tituloAlerta">Introduce un título</string>
     <string name="opcionAceptarDialogo">Aceptar</string>
     <string name="opcionCancelarDialogo">Cancelar</string>
-    <string name="descripcionDialogo">Introduce el titulo que quieras ponerle a esta comparacion.</string>
+    <string name="descripcionDialogo">Introduce un título para tu comparación de fotos, no puede tener mas de 10 caracteres.</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

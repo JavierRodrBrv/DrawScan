@@ -12,7 +12,7 @@ class DatosCamara(var tituloImagen: String, var porcentaje: Double?,var fotoRefe
 
     init {
         val c = Calendar.getInstance().time
-        val df = SimpleDateFormat("dd-MMM-yyyy")
+        val df = SimpleDateFormat("dd-MM-yyyy '-' HH:mm")
         this.dias = df.format(c)
         this.favorito = false
     }
