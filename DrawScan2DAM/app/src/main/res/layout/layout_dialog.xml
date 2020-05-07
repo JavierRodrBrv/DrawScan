@@ -9,11 +9,13 @@
         android:id="@+id/editTextTituloFoto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        style="@style/estiloTextoNegro"
         app:errorEnabled="true"
         app:counterEnabled="true"
         app:counterMaxLength="10">
         <com.google.android.material.textfield.TextInputEditText
             android:hint="@string/editTextTituloFoto"
+            style="@style/estiloTextoNegro"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:inputType="text"

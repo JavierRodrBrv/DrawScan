@@ -1,13 +1,16 @@
 package com.example.drawscan.fragmentos
 
 import android.content.Intent
+import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import com.example.drawscan.MainActivity
 import com.example.drawscan.R
@@ -26,7 +29,18 @@ class FragmentAjustes : Fragment() {
     private lateinit var botonCerrarSesion: Button
     private lateinit var uFirebase: FirebaseAuth
     private lateinit var gsic: GoogleSignInClient
+    private lateinit var animacion: AnimationDrawable
 
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        fragmentView = LayoutInflater.from(context).inflate(R.layout.fragment_ajustes,null)
+        val constraintLayout: ConstraintLayout = fragmentView.findViewById(R.id.idConstAjustes)
+        animacion = constraintLayout.background as AnimationDrawable
+        animacion.setEnterFadeDuration(2000)
+        animacion.setExitFadeDuration(4000)
+        animacion.start()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,7 +52,7 @@ class FragmentAjustes : Fragment() {
             .requestEmail()
             .build()
 
-        fragmentView = inflater.inflate(R.layout.fragment_ajustes, container, false)
+
         gsic = GoogleSignIn.getClient(fragmentView.context, gsio)
         botonCerrarSesion = fragmentView.findViewById(R.id.botonCerrarSesion)
         botonCerrarSesion.setOnClickListener(object : View.OnClickListener {
@@ -60,7 +74,7 @@ class FragmentAjustes : Fragment() {
                 ) { dialog, which ->
                     Toast.makeText(
                         fragmentView.context,
-                        resources.getString(R.string.textoSesionCerrada)+" con ${uFirebase.getCurrentUser()!!.email}",
+                        resources.getString(R.string.textoSesionCerrada) + " con ${uFirebase.getCurrentUser()!!.email}",
                         Toast.LENGTH_LONG
                     ).show()
                     uFirebase.signOut()
@@ -84,6 +98,5 @@ class FragmentAjustes : Fragment() {
         })
         return fragmentView
     }
-
 
 }

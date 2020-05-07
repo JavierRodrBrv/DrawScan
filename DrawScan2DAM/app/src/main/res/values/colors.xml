@@ -5,12 +5,12 @@
     <color name="colorAccent">#03DAC5</color>
     <color name="colorFondo1">#ffe2d8</color>
     <color name="colorFondo2">#ECABFD</color>
-    <color name="colorFondo3">#D8FFEB</color>
-    <color name="colorFondo4">#E2D8FF</color>
+    <color name="colorFondo3">#FF9E80</color>
+    <color name="colorFondo4">#DA6990</color>
     <color name="colorFondo5">#FFD8FA</color>
-    <color name="colorFondo6">#FFD8D8</color>
     <color name="colorFondoCamara">#D786AC</color>
     <color name="colorgris">#838383</color>
     <color name="colorBlanco">#FFFFFF</color>
     <color name="colorNegro">#000000</color>
+    <color name="colorGrisClaro">#B8B8B8</color>
 </resources>

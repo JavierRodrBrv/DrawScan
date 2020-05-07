@@ -10,8 +10,8 @@ import android.graphics.Matrix
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.provider.MediaStore
-import android.view.KeyEvent
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
@@ -53,13 +53,21 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
         barraProgreso = findViewById(R.id.idProgressBar)
         //aqui va firebase..
 
-        val dialogoEditText = DialogoEditText(this)
-        dialogoEditText.show(supportFragmentManager, "")
+
+        if (intent.extras==null) {
+            val dialogoEditText = DialogoEditText(this)
+            dialogoEditText.show(supportFragmentManager, "")
+        }else{
+            val handler=Handler()
+            handler.postDelayed(Runnable {
+                onBackPressed()
+            },3000)
+        }
     }
 
     /**
      * Función de tipo boolean que retorna si tenemos permisos para la camara y el almacenamiento
-     * Retorna true si lo tenemos, false si no
+     * @return true si lo tenemos, false si no
      * Para conseguir una imagen de alta calidad, tendiramos que guardar la imagen al almacenamiento externo, para ello el requisito de su permision
      */
     fun comprobarPermisosCamara(): Boolean {
@@ -186,7 +194,7 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
 
                         val img1 = Imagenes.imagen1
                         val img2 = Imagenes.imagen2
-                        var p: Double? = getDifferencePercent(img1!!, img2!!)
+                        var p: Double? = porcentajeSimilitud(img1!!, img2!!)
 
                         if (p != null) {
                             p = 100 - p
@@ -202,7 +210,7 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
                             InicializarInterfaz.setArray(ListaDatos.listaDatos)
                             Imagenes.imagen1 = null
                             Imagenes.imagen2 = null
-                            finish()
+                            saltoDeActividad()
                         }
 
 
@@ -233,18 +241,18 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
     /**
      * Esta función es la que calcula las dos imagenes.
      */
-    fun getDifferencePercent(img1: Bitmap, img2: Bitmap): Double? {
-
-
-        val nuevaDimension = getResizedBitmap(img1, 768, 768)
-        val nuevaDimension2 = getResizedBitmap(img2, 768, 768)
+    fun porcentajeSimilitud(img1: Bitmap, img2: Bitmap): Double? {
+        val nuevaDimension = getRedimensionBitmap(img1, 768, 768)
+        val nuevaDimension2 = getRedimensionBitmap(img2, 768, 768)
         println("${nuevaDimension!!.width},${nuevaDimension.height} ${nuevaDimension2!!.width},${nuevaDimension2.height}")
-
 
         val width = nuevaDimension!!.width
         val height = nuevaDimension.height
         val width2 = nuevaDimension2!!.width
         val height2 = nuevaDimension2.height
+
+        //Es raro de que entre en este If, ya que anteriormente hemos marcado obligatorio que las dos imagenes tengan las mismas dimensiones.
+        //Pero siempre hay que estar seguros...
         if (width != width2 || height != height2) {
             val f = "(%d,%d) vs. (%d,%d)".format(width, height, width2, height2)
             Toast.makeText(
@@ -255,11 +263,9 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
             println("Las dimensiones de las imagenes tienen que ser iguales $f")
         } else {
             var diff = 0L
-
             for (y in 0 until height) {
                 for (x in 0 until width) {
-
-                    diff += pixelDiff(nuevaDimension.getPixel(x, y), nuevaDimension2.getPixel(x, y))
+                    diff += diferenciarPixeles(nuevaDimension.getPixel(x, y), nuevaDimension2.getPixel(x, y))
                 }
             }
             val maxDiff = 3L * 255 * width * height
@@ -268,17 +274,20 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
         return null
     }
 
-    fun getResizedBitmap(bm: Bitmap, newWidth: Int, newHeight: Int): Bitmap? {
+    /**
+     *
+     */
+    fun getRedimensionBitmap(bm: Bitmap, newWidth: Int, newHeight: Int): Bitmap? {
         val width = bm.width
         val height = bm.height
         val scaleWidth = newWidth.toFloat() / width
         val scaleHeight = newHeight.toFloat() / height
-        // CREATE A MATRIX FOR THE MANIPULATION
+        // Creamos el matrix para manipular el Bitmap
         val matrix = Matrix()
-        // RESIZE THE BIT MAP
+        // Redimensiona el bitmap
         matrix.postScale(scaleWidth, scaleHeight)
 
-        // "RECREATE" THE NEW BITMAP
+        // Recrea un el nuevo Bitmap
         val resizedBitmap = Bitmap.createBitmap(
             bm, 0, 0, width, height, matrix, false
         )
@@ -290,7 +299,7 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
     /**
      * Función que clasifica los pixeles con sus respectivos colores.
      */
-    fun pixelDiff(rgb1: Int, rgb2: Int): Int {
+    fun diferenciarPixeles(rgb1: Int, rgb2: Int): Int {
         val r1 = (rgb1 shr 16) and 0xff
         val g1 = (rgb1 shr 8) and 0xff
         val b1 = rgb1 and 0xff
@@ -300,12 +309,9 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
         return abs(r1 - r2) + abs(g1 - g2) + abs(b1 - b2)
     }
 
-
-
     override fun aplicarTitulo(tituloFoto: String?) {
         tituloFotoDefinitivo = tituloFoto!!
         activarCamara()
-
     }
 
     override fun acabarActividad() {
@@ -313,9 +319,16 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
     }
 
     override fun onBackPressed() {
-        Toast.makeText(this, "Intento de salir", Toast.LENGTH_LONG).show()
         val intent = Intent(this, PantallaFragments::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        startActivity(intent)
+    }
+
+    fun saltoDeActividad(){
+        val b=Bundle()
+        val intent=Intent(this,ActividadCamara::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        intent.putExtras(b)
         startActivity(intent)
     }
 

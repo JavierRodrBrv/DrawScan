@@ -2,39 +2,55 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/frameLayout"
+    android:id="@+id/idConstAjustes"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/mi_fondo_animado"
     tools:context=".fragmentos.FragmentAjustes">
 
     <Button
         android:id="@+id/botonCerrarSesion"
-        android:layout_width="247dp"
+        android:layout_width="231dp"
         android:layout_height="52dp"
+        android:layout_marginBottom="100dp"
         android:background="@drawable/boton_redondo"
-        android:drawableStart="@drawable/icono_exit"
-        android:shadowRadius="15"
+        android:drawableEnd="@drawable/icono_exit"
+        android:shadowRadius="15.0"
         android:text="@string/cerrarSesionGoogle"
-
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/idSwitchModoOscuro" />
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <Switch
-        android:id="@+id/idSwitchModoOscuro"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/switchModoOscuro"
+    <CheckBox
+        android:id="@+id/checkModoDark"
+        android:layout_width="231dp"
+        android:layout_height="38dp"
+        android:layout_marginTop="56dp"
+        android:button="@null"
+        android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
+        android:text="@string/textoModoOscuro"
+        android:padding="10dp"
         android:background="@drawable/boton_redondo"
-        style="@style/estiloTextoNegro"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toTopOf="@+id/botonCerrarSesion"
+        android:shadowRadius="15.0"
+        app:layout_constraintBottom_toTopOf="@+id/checkDesactivarAlertaInicio"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <CheckBox
+        android:id="@+id/checkDesactivarAlertaInicio"
+        android:layout_width="231dp"
+        android:layout_height="38dp"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/boton_redondo"
+        android:shadowRadius="15.0"
+        android:button="@null"
+        android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
+        android:padding="10dp"
+        android:text="@string/textoAlertaInicial"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/checkModoDark" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

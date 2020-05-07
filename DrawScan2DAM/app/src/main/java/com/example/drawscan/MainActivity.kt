@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
 
         miLayout = findViewById<View>(R.id.miFondo) as ConstraintLayout
         animationDrawable = miLayout!!.getBackground() as AnimationDrawable?
-        animationDrawable?.setEnterFadeDuration(4000)
+        animationDrawable?.setEnterFadeDuration(2000)
         animationDrawable?.setExitFadeDuration(4000)
         animationDrawable?.start()
 

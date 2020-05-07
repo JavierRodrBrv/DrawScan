@@ -3,6 +3,7 @@ package com.example.drawscan.clases
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,11 +20,13 @@ class DialogoEditText(private val contexto: Context) : DialogFragment() {
         super.onCreate(savedInstanceState)
         vista = LayoutInflater.from(contexto).inflate(R.layout.layout_dialog, null)
         editTextTitulo = vista!!.findViewById(R.id.editTextTituloFoto)
+        setStyle(DialogFragment.STYLE_NO_TITLE,R.style.Theme_AppCompat_Light_Dialog)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(contexto)
         builder.setView(vista)
+
             .setTitle(R.string.tituloAlerta)
             .setMessage(R.string.descripcionDialogo)
             .setPositiveButton(R.string.opcionAceptarDialogo, null)
@@ -36,8 +39,13 @@ class DialogoEditText(private val contexto: Context) : DialogFragment() {
     override fun onResume() {
         super.onResume()
         val dialogo = dialog as AlertDialog?
+        dialogo!!.setOnCancelListener(object: DialogInterface.OnCancelListener{
+            override fun onCancel(dialog: DialogInterface?) {
+                listener!!.acabarActividad()
+            }
+        })
         val botonAceptar =
-            dialogo!!.getButton(AlertDialog.BUTTON_POSITIVE)
+            dialogo.getButton(AlertDialog.BUTTON_POSITIVE)
         botonAceptar.setOnClickListener(View.OnClickListener {
             if (!validarTitulo()) {
                 return@OnClickListener
@@ -66,15 +74,16 @@ class DialogoEditText(private val contexto: Context) : DialogFragment() {
     private fun validarTitulo(): Boolean {
         val tituloFoto = editTextTitulo!!.editText!!.text.toString()
         return if (tituloFoto.isEmpty()) {
-            editTextTitulo!!.error = "Este campo no puede estar vacio"
+            editTextTitulo!!.error = contexto.resources.getString(R.string.errorDialogoVacio)
             false
         } else if (tituloFoto.length > 10) {
-            editTextTitulo!!.error = "No puede ser mas de 10 caracteres"
+            editTextTitulo!!.error = contexto.resources.getString(R.string.errorDialogoMax10)
             false
         } else {
             editTextTitulo!!.error = null
             true
         }
     }
+
 
 }
