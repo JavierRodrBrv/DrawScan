@@ -4,7 +4,9 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
+import android.graphics.Color
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import androidx.appcompat.app.AppCompatDialogFragment
@@ -20,32 +22,34 @@ class DialogoEditText(private val contexto: Context) : DialogFragment() {
         super.onCreate(savedInstanceState)
         vista = LayoutInflater.from(contexto).inflate(R.layout.layout_dialog, null)
         editTextTitulo = vista!!.findViewById(R.id.editTextTituloFoto)
-        setStyle(DialogFragment.STYLE_NO_TITLE,R.style.Theme_AppCompat_Light_Dialog)
+        setStyle(DialogFragment.STYLE_NO_TITLE, R.style.Theme_AppCompat_Light_Dialog)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = AlertDialog.Builder(contexto)
+        val builder = AlertDialog.Builder(contexto, R.style.estiloDialogo)
         builder.setView(vista)
-
-            .setTitle(R.string.tituloAlerta)
             .setMessage(R.string.descripcionDialogo)
             .setPositiveButton(R.string.opcionAceptarDialogo, null)
             .setNegativeButton(
                 R.string.opcionCancelarDialogo
-            ) { dialog, which -> listener!!.acabarActividad() }
+            ) { dialog, which ->
+                listener!!.acabarActividad()
+            }
         return builder.create()
     }
 
     override fun onResume() {
         super.onResume()
         val dialogo = dialog as AlertDialog?
-        dialogo!!.setOnCancelListener(object: DialogInterface.OnCancelListener{
+        dialogo!!.setOnCancelListener(object : DialogInterface.OnCancelListener {
             override fun onCancel(dialog: DialogInterface?) {
                 listener!!.acabarActividad()
             }
         })
         val botonAceptar =
             dialogo.getButton(AlertDialog.BUTTON_POSITIVE)
+        botonAceptar.setBackgroundColor(contexto.resources.getColor(R.color.colorAccent))
+        botonAceptar.gravity = Gravity.CENTER
         botonAceptar.setOnClickListener(View.OnClickListener {
             if (!validarTitulo()) {
                 return@OnClickListener
