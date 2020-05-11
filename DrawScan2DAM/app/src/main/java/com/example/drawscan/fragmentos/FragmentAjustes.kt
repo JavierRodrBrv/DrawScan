@@ -57,7 +57,7 @@ class FragmentAjustes : Fragment() {
         botonCerrarSesion = fragmentView.findViewById(R.id.botonCerrarSesion)
         botonCerrarSesion.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
-                val dialogo = AlertDialog.Builder(fragmentView.context)
+                val dialogo = AlertDialog.Builder(fragmentView.context,R.style.estiloDialogoCerrarSesion)
                 dialogo.setIcon(R.drawable.icono_alerta)
                 dialogo.setTitle(resources.getString(R.string.tituloDialogo))
                 dialogo.setMessage(resources.getString(R.string.mensajeDialogo))
@@ -91,9 +91,7 @@ class FragmentAjustes : Fragment() {
                             }
                         })
                 }
-
                 dialogo.show()
-
             }
         })
         return fragmentView

@@ -4,15 +4,14 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
-import android.graphics.Color
 import android.os.Bundle
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
-import androidx.appcompat.app.AppCompatDialogFragment
+import android.widget.LinearLayout
 import androidx.fragment.app.DialogFragment
 import com.example.drawscan.R
 import com.google.android.material.textfield.TextInputLayout
+
 
 class DialogoEditText(private val contexto: Context) : DialogFragment() {
     private var editTextTitulo: TextInputLayout? = null
@@ -29,12 +28,8 @@ class DialogoEditText(private val contexto: Context) : DialogFragment() {
         val builder = AlertDialog.Builder(contexto, R.style.estiloDialogo)
         builder.setView(vista)
             .setMessage(R.string.descripcionDialogo)
-            .setPositiveButton(R.string.opcionAceptarDialogo, null)
-            .setNegativeButton(
-                R.string.opcionCancelarDialogo
-            ) { dialog, which ->
-                listener!!.acabarActividad()
-            }
+            .setPositiveButton(" ", null)
+            .setNegativeButton(" ",null)
         return builder.create()
     }
 
@@ -48,8 +43,9 @@ class DialogoEditText(private val contexto: Context) : DialogFragment() {
         })
         val botonAceptar =
             dialogo.getButton(AlertDialog.BUTTON_POSITIVE)
-        botonAceptar.setBackgroundColor(contexto.resources.getColor(R.color.colorAccent))
-        botonAceptar.gravity = Gravity.CENTER
+        botonAceptar.setBackgroundResource(R.drawable.boton_redondo_dialogo_aceptar)
+        botonAceptar.setCompoundDrawablesWithIntrinsicBounds(R.drawable.icono_aceptar,0,0,0)
+        botonAceptar.setPadding(40,0,0,0)
         botonAceptar.setOnClickListener(View.OnClickListener {
             if (!validarTitulo()) {
                 return@OnClickListener
@@ -59,6 +55,21 @@ class DialogoEditText(private val contexto: Context) : DialogFragment() {
                 listener!!.aplicarTitulo(tituloFoto)
             }
         })
+        val botonCancelar=dialogo.getButton(AlertDialog.BUTTON_NEGATIVE)
+        botonCancelar.setBackgroundResource(R.drawable.boton_redondo_dialogo_cancelar)
+        botonCancelar.setCompoundDrawablesWithIntrinsicBounds(R.drawable.icono_cancelar,0,0,0)
+        botonCancelar.setPadding(38,0,0,0)
+        botonCancelar.setOnClickListener(object: View.OnClickListener{
+            override fun onClick(v: View?) {
+                listener!!.acabarActividad()
+            }
+        })
+        val layoutParamsCancelar =botonCancelar.getLayoutParams() as LinearLayout.LayoutParams
+        val layoutParamsAceptar =botonAceptar.getLayoutParams() as LinearLayout.LayoutParams
+        layoutParamsCancelar.setMargins(0,0,490,15)
+        layoutParamsAceptar.setMargins(0,0,15,15)
+        botonCancelar.setLayoutParams(layoutParamsCancelar)
+        botonAceptar.setLayoutParams(layoutParamsAceptar)
     }
 
     override fun onAttach(context: Context) {

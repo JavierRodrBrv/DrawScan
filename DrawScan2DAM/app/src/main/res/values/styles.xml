@@ -34,4 +34,29 @@
         <item name="android:background">@color/colorFondo1</item>
     </style>
 
+    <style name="estiloDialogoCerrarSesion" parent="estiloDialogo">
+        <item name="android:windowTitleStyle">@style/tituloDialogoCerrarSesion</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+
+    </style>
+    <style name="tituloDialogoCerrarSesion" parent="TextAppearance.AppCompat.Large">
+        <item name="android:textSize">35sp</item>
+        <item name="android:fontFamily">@font/minimal</item>
+    </style>
+    <style name="PositiveButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:layout_margin">5dp</item>
+        <item name="strokeWidth">2dp</item>
+    </style>
+
+    <style name="NegativeButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="android:background">@color/colorPrimaryDark</item>
+        <item name="android:layout_margin">5dp</item>
+        <item name="strokeWidth">2dp</item>
+    </style>
+
+
+
 </resources>
