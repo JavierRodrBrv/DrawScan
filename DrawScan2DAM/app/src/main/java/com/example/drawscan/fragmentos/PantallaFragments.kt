@@ -2,6 +2,7 @@ package com.example.drawscan.fragmentos
 
 import android.app.Dialog
 import android.content.Intent
+import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -14,10 +15,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import com.example.drawscan.ActividadCamara
 import com.example.drawscan.R
+import com.example.drawscan.clases.SharedPref
 import com.example.drawscan.globales.BooleanPopup
 import com.example.drawscan.modalview.ViewModelCamara
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
+
 
 class PantallaFragments : AppCompatActivity() {
     private lateinit var adapter: AdapterParaFragmentos// Adapter utilizado para los fragmentos
@@ -29,9 +32,21 @@ class PantallaFragments : AppCompatActivity() {
     private lateinit var dialogoPopup: Dialog //Este es el dialogo Pop-Up de informacion sobre el correcto uso de la aplicación.
     private lateinit var imagenCerrarPopup: ImageView //Esta es la imagen X para cerrar el dialogo Pop-up
     private lateinit var botonEntendido: Button //Este boton cierra el dialogo Pop-up
+    private lateinit var sharedPreferences: SharedPref
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        sharedPreferences=SharedPref(this)
         super.onCreate(savedInstanceState)
+        sharedPreferences.setModoNocheListener(object : SharedPref.ModoNoche{
+            override fun cambiarModoNoche() {
+                if(sharedPreferences.loadNightModeState()){
+                    Toast.makeText(applicationContext,"hola",Toast.LENGTH_LONG).show()
+                    reiniciarApp()
+                }else{
+                    reiniciarApp()
+                }
+            }
+        })
         dialogoPopup = Dialog(this)
         setContentView(R.layout.activity_pantalla_fragments)
         adapter = AdapterParaFragmentos(
@@ -60,7 +75,6 @@ class PantallaFragments : AppCompatActivity() {
             mostrarDialogoPopUp()
             BooleanPopup.boolPopup = false
         }
-
 
     }
 
@@ -100,6 +114,27 @@ class PantallaFragments : AppCompatActivity() {
         })
         dialogoPopup.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialogoPopup.show()
+    }
+
+    fun reiniciarApp() {
+        val i = Intent(this, PantallaFragments::class.java)
+        startActivity(i)
+        finish()
+
+    }
+
+    fun getPreferences():SharedPref{
+        return sharedPreferences
+    }
+
+    override fun getTheme(): Resources.Theme {
+        val theme = super.getTheme()
+        if(sharedPreferences.loadNightModeState()){
+            theme.applyStyle(R.style.NightMode, true)
+        }else{
+            theme.applyStyle(R.style.AppTheme, true)
+        }
+        return theme
     }
 
 }

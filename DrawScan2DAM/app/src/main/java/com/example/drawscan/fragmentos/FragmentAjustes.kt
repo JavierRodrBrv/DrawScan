@@ -7,13 +7,13 @@ import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import com.example.drawscan.MainActivity
 import com.example.drawscan.R
+import com.example.drawscan.clases.SharedPref
 import com.example.drawscan.globales.BooleanPopup
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -31,11 +31,45 @@ class FragmentAjustes : Fragment() {
     private lateinit var uFirebase: FirebaseAuth
     private lateinit var gsic: GoogleSignInClient
     private lateinit var animacion: AnimationDrawable
+    private lateinit var switchModoOscuro: Switch
+    private val sharedPref by lazy { (context as PantallaFragments).getPreferences() }
+    private val pantallaFragments by lazy { context as PantallaFragments }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        fragmentView = LayoutInflater.from(context).inflate(R.layout.fragment_ajustes,null)
+
+        fragmentView = LayoutInflater.from(context).inflate(R.layout.fragment_ajustes, null)
+
+        /*
+        if (sharedPref.loadNightModeState()) {
+            pantallaFragments.theme
+
+        }else{
+            pantallaFragments.setTheme(R.style.AppTheme)
+        }
+
+         */
+        switchModoOscuro=fragmentView.findViewById(R.id.swModoOscuro)
+        if(sharedPref.loadNightModeState()){
+            switchModoOscuro.isChecked=true
+        }
+
+
+        switchModoOscuro.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener{
+            override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
+                if(isChecked){
+                    sharedPref.setNightModeState(true)
+                    //(context as PantallaFragments).reiniciarApp()
+
+                }else{
+                    sharedPref.setNightModeState(false)
+                    //(context as PantallaFragments).reiniciarApp()
+
+                }
+            }
+        })
+
         val constraintLayout: ConstraintLayout = fragmentView.findViewById(R.id.idConstAjustes)
         animacion = constraintLayout.background as AnimationDrawable
         animacion.setEnterFadeDuration(2000)
@@ -58,7 +92,8 @@ class FragmentAjustes : Fragment() {
         botonCerrarSesion = fragmentView.findViewById(R.id.botonCerrarSesion)
         botonCerrarSesion.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
-                val dialogo = AlertDialog.Builder(fragmentView.context,R.style.estiloDialogoCerrarSesion)
+                val dialogo =
+                    AlertDialog.Builder(fragmentView.context, R.style.estiloDialogoCerrarSesion)
                 dialogo.setIcon(R.drawable.icono_alerta)
                 dialogo.setTitle(resources.getString(R.string.tituloDialogo))
                 dialogo.setMessage(resources.getString(R.string.mensajeDialogo))
@@ -86,7 +121,7 @@ class FragmentAjustes : Fragment() {
                                     fragmentView.context,
                                     MainActivity::class.java
                                 )
-                                BooleanPopup.boolPopup=true
+                                BooleanPopup.boolPopup = true
                                 paginaInicio.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                                 startActivity(paginaInicio)
                             }
@@ -97,5 +132,7 @@ class FragmentAjustes : Fragment() {
         })
         return fragmentView
     }
+
+
 
 }

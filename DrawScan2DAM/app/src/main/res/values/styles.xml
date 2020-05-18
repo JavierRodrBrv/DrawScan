@@ -7,6 +7,15 @@
         <item name="colorPrimaryDark">@color/colorFondo1</item>
         <item name="colorAccent">@color/colorPrimary</item>
     </style>
+    <style name="NightMode" parent="Theme.AppCompat.DayNight.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorFondo1</item>
+        <item name="android:textColor">@color/colorNegro</item>
+        <item name="titleTextColor">@color/colorPrimaryLight</item>
+    </style>
+
 
     <style name="TextAppearance.AppCompat.Widget.ActionBar.Title" parent="@style/TextAppearance.AppCompat">
         <item name="android:textColor">@color/colorPrimary</item>
