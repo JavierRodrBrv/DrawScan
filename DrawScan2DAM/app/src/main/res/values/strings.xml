@@ -24,6 +24,9 @@
     <string name="descripcionDialogo">Introduce un título para tu comparación de fotos, no puede tener mas de 10 caracteres.</string>
     <string name="errorDialogoVacio">Este campo no puede estar vacio</string>
     <string name="errorDialogoMax10">No puede ser mas de 10 caracteres</string>
+    <string name="tituloPopUp">¡IMPORTANTE!</string>
+    <string name="mensajePopUp">Para que la aplicación saque una similitud más precisa, debes de realizar las dos fotos entre la referencia que has buscado y tu dibujo que has realizado.\n Ya que si haces dos fotos que no tengan ningun tipo de relación entre si, el resultado sera indiferente.</string>
+    <string name="comprendidoPopUp">Entendido</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

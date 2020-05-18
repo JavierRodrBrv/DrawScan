@@ -14,6 +14,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import com.example.drawscan.MainActivity
 import com.example.drawscan.R
+import com.example.drawscan.globales.BooleanPopup
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -81,11 +82,11 @@ class FragmentAjustes : Fragment() {
                     gsic.signOut()
                         .addOnCompleteListener(OnCompleteListener<Void?> { task ->
                             if (task.isSuccessful) {
-
                                 val paginaInicio = Intent(
                                     fragmentView.context,
                                     MainActivity::class.java
                                 )
+                                BooleanPopup.boolPopup=true
                                 paginaInicio.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                                 startActivity(paginaInicio)
                             }
