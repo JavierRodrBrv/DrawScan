@@ -35,14 +35,14 @@ class PantallaFragments : AppCompatActivity() {
     private lateinit var sharedPreferences: SharedPref
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        sharedPreferences=SharedPref(this)
+        sharedPreferences = SharedPref(this)
         super.onCreate(savedInstanceState)
-        sharedPreferences.setModoNocheListener(object : SharedPref.ModoNoche{
+        sharedPreferences.setModoNocheListener(object : SharedPref.ModoNoche {
             override fun cambiarModoNoche() {
-                if(sharedPreferences.loadNightModeState()){
-                    Toast.makeText(applicationContext,"hola",Toast.LENGTH_LONG).show()
+                if (sharedPreferences.loadNightModeState()) {
                     reiniciarApp()
-                }else{
+
+                } else {
                     reiniciarApp()
                 }
             }
@@ -101,7 +101,6 @@ class PantallaFragments : AppCompatActivity() {
         dialogoPopup.setContentView(R.layout.custom_popup_dialog)
         imagenCerrarPopup = dialogoPopup.findViewById(R.id.cerrarPopup) as ImageView
         botonEntendido = dialogoPopup.findViewById(R.id.botonEntendidoPopup) as Button
-
         imagenCerrarPopup.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
                 dialogoPopup.dismiss()
@@ -120,18 +119,17 @@ class PantallaFragments : AppCompatActivity() {
         val i = Intent(this, PantallaFragments::class.java)
         startActivity(i)
         finish()
-
     }
 
-    fun getPreferences():SharedPref{
+    fun getPreferences(): SharedPref {
         return sharedPreferences
     }
 
     override fun getTheme(): Resources.Theme {
         val theme = super.getTheme()
-        if(sharedPreferences.loadNightModeState()){
+        if (sharedPreferences.loadNightModeState()) {
             theme.applyStyle(R.style.NightMode, true)
-        }else{
+        } else {
             theme.applyStyle(R.style.AppTheme, true)
         }
         return theme

@@ -38,34 +38,17 @@ class FragmentAjustes : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         fragmentView = LayoutInflater.from(context).inflate(R.layout.fragment_ajustes, null)
-
-        /*
-        if (sharedPref.loadNightModeState()) {
-            pantallaFragments.theme
-
-        }else{
-            pantallaFragments.setTheme(R.style.AppTheme)
-        }
-
-         */
         switchModoOscuro=fragmentView.findViewById(R.id.swModoOscuro)
         if(sharedPref.loadNightModeState()){
             switchModoOscuro.isChecked=true
         }
-
-
         switchModoOscuro.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener{
             override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
                 if(isChecked){
                     sharedPref.setNightModeState(true)
-                    //(context as PantallaFragments).reiniciarApp()
-
                 }else{
                     sharedPref.setNightModeState(false)
-                    //(context as PantallaFragments).reiniciarApp()
-
                 }
             }
         })

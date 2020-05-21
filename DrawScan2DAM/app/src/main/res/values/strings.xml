@@ -11,7 +11,7 @@
     <string name="botonPositivoDialogo">Si</string>
     <string name="textoSesionCerrada">Se ha cerrado la sesión</string>
     <string name="fechaConcreta">Fecha :</string>
-    <string name="porcentajeExacto">Porcentaje similitud: </string>
+    <string name="porcentajeExacto">Porcentaje similitud : </string>
     <string name="descripcionFotoRealizada">Esta imagen es la recogida de la foto que el usuario ha realizado.</string>
     <string name="textoFotoCapturada">Capturando...</string>
     <string name="tituloEscaner">Error</string>

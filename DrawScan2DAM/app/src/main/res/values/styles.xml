@@ -36,6 +36,11 @@
         <item name="android:textSize">20sp</item>
     </style>
 
+    <style name="estiloTextoModoOscuro" parent="estiloTextoNegro" >
+        <item name="android:textColor">@color/colorBlanco</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
     <style name="estiloDialogo" parent="Theme.AppCompat.Dialog.Alert">
         <item name="android:fontFamily">@font/minimal</item>
         <item name="android:textColorPrimary">@color/colorNegro</item>
