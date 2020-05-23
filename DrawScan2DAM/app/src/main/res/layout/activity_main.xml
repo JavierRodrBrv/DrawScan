@@ -6,7 +6,7 @@
     android:background="@drawable/mi_fondo_animado"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity" >
+    tools:context=".actividad.MainActivity" >
 
     <ImageView
         android:id="@+id/imagenLogo"

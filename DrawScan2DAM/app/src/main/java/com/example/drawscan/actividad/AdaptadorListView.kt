@@ -1,4 +1,4 @@
-package com.example.drawscan
+package com.example.drawscan.actividad
 
 import android.app.Activity
 import android.content.Context
@@ -6,9 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import com.bumptech.glide.Glide
+import com.example.drawscan.R
 import com.example.drawscan.clases.DatosCamara
 import com.example.drawscan.clases.SharedPref
-import com.example.drawscan.fragmentos.PantallaFragments
 import com.sackcentury.shinebuttonlib.ShineButton
 
 class AdaptadorListView(contexto: Context, lista: ArrayList<DatosCamara>) :

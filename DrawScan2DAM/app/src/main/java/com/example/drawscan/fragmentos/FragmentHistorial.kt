@@ -6,11 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ListView
+import android.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.example.drawscan.ActividadCamara
-import com.example.drawscan.AdaptadorListView
 import com.example.drawscan.R
+import com.example.drawscan.actividad.AdaptadorListView
 import com.example.drawscan.clases.DatosCamara
 import com.example.drawscan.clases.InicializarInterfaz
 import com.example.drawscan.databinding.FragmentHistorialBinding
@@ -27,6 +27,7 @@ class FragmentHistorial : Fragment() {
     private lateinit var listaHistorial: ListView
     private var binding: FragmentHistorialBinding? = null
     private val bindingObtener get() = binding!!
+    private lateinit var barraDeBusqueda:SearchView
 
 
     override fun onCreateView(
@@ -36,8 +37,13 @@ class FragmentHistorial : Fragment() {
         // Inflate the layout for this fragment
         binding=FragmentHistorialBinding.inflate(inflater,container,false)
         val view =binding!!.root
-        adaptador = AdaptadorListView(context!!, ListaDatos.listaDatos)
+        adaptador = AdaptadorListView(
+            context!!,
+            ListaDatos.listaDatos
+        )
         binding!!.idListaHistorial.adapter=adaptador
+        barraDeBusqueda=view.findViewById(R.id.idBusquedaHistorial) as SearchView
+
         return view
     }
 

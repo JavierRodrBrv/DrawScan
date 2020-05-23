@@ -1,4 +1,4 @@
-package com.example.drawscan
+package com.example.drawscan.actividad
 
 import android.content.Intent
 import android.graphics.drawable.AnimationDrawable
@@ -10,7 +10,7 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.example.drawscan.fragmentos.PantallaFragments
+import com.example.drawscan.R
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient

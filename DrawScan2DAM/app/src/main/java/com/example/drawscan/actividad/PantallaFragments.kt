@@ -1,4 +1,4 @@
-package com.example.drawscan.fragmentos
+package com.example.drawscan.actividad
 
 import android.app.Dialog
 import android.content.Intent
@@ -9,13 +9,15 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
-import com.example.drawscan.ActividadCamara
 import com.example.drawscan.R
 import com.example.drawscan.clases.SharedPref
+import com.example.drawscan.fragmentos.AdapterParaFragmentos
+import com.example.drawscan.fragmentos.FragmentAjustes
+import com.example.drawscan.fragmentos.FragmentFavoritos
+import com.example.drawscan.fragmentos.FragmentHistorial
 import com.example.drawscan.globales.BooleanPopup
 import com.example.drawscan.modalview.ViewModelCamara
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -47,6 +49,7 @@ class PantallaFragments : AppCompatActivity() {
                 }
             }
         })
+
         dialogoPopup = Dialog(this)
         setContentView(R.layout.activity_pantalla_fragments)
         adapter = AdapterParaFragmentos(
@@ -71,10 +74,13 @@ class PantallaFragments : AppCompatActivity() {
                 startActivity(intentCamara)
             }
         })
-        if (BooleanPopup.boolPopup) {
+        if (BooleanPopup.boolPopup && sharedPreferences.loadAlertaState()) {
             mostrarDialogoPopUp()
             BooleanPopup.boolPopup = false
         }
+
+
+
 
     }
 

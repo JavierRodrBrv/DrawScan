@@ -1,4 +1,4 @@
-package com.example.drawscan
+package com.example.drawscan.actividad
 
 import android.Manifest
 import android.app.Activity
@@ -17,10 +17,10 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.example.drawscan.R
 import com.example.drawscan.clases.DatosCamara
 import com.example.drawscan.clases.DialogoEditText
 import com.example.drawscan.clases.InicializarInterfaz
-import com.example.drawscan.fragmentos.PantallaFragments
 import com.example.drawscan.globales.Imagenes
 import com.example.drawscan.globales.ListaDatos
 import com.theartofdev.edmodo.cropper.CropImage
@@ -326,7 +326,7 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
 
     fun saltoDeActividad(){
         val b=Bundle()
-        val intent=Intent(this,ActividadCamara::class.java)
+        val intent=Intent(this, ActividadCamara::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         intent.putExtras(b)
         startActivity(intent)

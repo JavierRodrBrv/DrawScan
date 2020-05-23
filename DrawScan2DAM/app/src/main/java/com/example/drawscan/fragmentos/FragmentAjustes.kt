@@ -3,7 +3,6 @@ package com.example.drawscan.fragmentos
 import android.content.Intent
 import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
-import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,9 +10,9 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import com.example.drawscan.MainActivity
+import com.example.drawscan.actividad.MainActivity
 import com.example.drawscan.R
-import com.example.drawscan.clases.SharedPref
+import com.example.drawscan.actividad.PantallaFragments
 import com.example.drawscan.globales.BooleanPopup
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -32,6 +31,7 @@ class FragmentAjustes : Fragment() {
     private lateinit var gsic: GoogleSignInClient
     private lateinit var animacion: AnimationDrawable
     private lateinit var switchModoOscuro: Switch
+    private lateinit var switchAlertaInicial:Switch
     private val sharedPref by lazy { (context as PantallaFragments).getPreferences() }
     private val pantallaFragments by lazy { context as PantallaFragments }
 
@@ -40,16 +40,21 @@ class FragmentAjustes : Fragment() {
         super.onCreate(savedInstanceState)
         fragmentView = LayoutInflater.from(context).inflate(R.layout.fragment_ajustes, null)
         switchModoOscuro=fragmentView.findViewById(R.id.swModoOscuro)
+        switchAlertaInicial=fragmentView.findViewById(R.id.swAlertaInicial)
         if(sharedPref.loadNightModeState()){
             switchModoOscuro.isChecked=true
         }
+        if(sharedPref.loadAlertaState()){
+            switchAlertaInicial.isChecked=true
+        }
         switchModoOscuro.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener{
             override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
-                if(isChecked){
-                    sharedPref.setNightModeState(true)
-                }else{
-                    sharedPref.setNightModeState(false)
-                }
+                sharedPref.setNightModeState(isChecked)
+            }
+        })
+        switchAlertaInicial.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener{
+            override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
+                sharedPref.setAlertaState(isChecked)
             }
         })
 
