@@ -5,10 +5,13 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import com.bumptech.glide.Glide
 import com.example.drawscan.R
 import com.example.drawscan.clases.DatosCamara
 import com.example.drawscan.clases.SharedPref
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.sackcentury.shinebuttonlib.ShineButton
 
 class AdaptadorListView(contexto: Context, lista: ArrayList<DatosCamara>) :
@@ -25,7 +28,9 @@ class AdaptadorListView(contexto: Context, lista: ArrayList<DatosCamara>) :
     private var fullLista: ArrayList<DatosCamara>? = null// ArrayList de datos escaneados, se usa para el filtro de busqueda.
     private lateinit var sharedPreferences: SharedPref
     private lateinit var botonFavorito:ShineButton // Este es el boton fav
-
+    private val usuarioLogeado by lazy { FirebaseAuth.getInstance().currentUser }
+    private val baseDeDatos by lazy { FirebaseFirestore.getInstance() }
+    private lateinit var listener: ModificarLista
 
     init {
         listaDatos = lista
@@ -57,7 +62,7 @@ class AdaptadorListView(contexto: Context, lista: ArrayList<DatosCamara>) :
         porcentajeFoto.setText(contextoAplicacion.resources.getString(R.string.porcentajeExacto)+listaDatos!!.get(position).porcentaje.toString())
         textoFecha.setText(contextoAplicacion.resources.getString(R.string.fechaConcreta)+listaDatos!!.get(position).dias)
         //Para rellenar con la foto de la referencia en el imageView de elementoLista
-        Glide.with(vistaElemento.context).load(listaDatos!!.get(position).fotoReferencia).into(fotoImagen)
+        //Glide.with(vistaElemento.context).load(listaDatos!!.get(position).fotoReferencia).into(fotoImagen)
 
         if (sharedPreferences.loadNightModeState()) {
             textoFecha.setTextAppearance(R.style.estiloTextoModoOscuro)
@@ -85,13 +90,41 @@ class AdaptadorListView(contexto: Context, lista: ArrayList<DatosCamara>) :
             }
         })
 
+        if(listaDatos!!.get(position).favorito){
+            botonFavorito.isChecked=true
+        }
+
+        botonFavorito.setOnClickListener(object :View.OnClickListener{
+            override fun onClick(v: View?) {
+                if(listaDatos!!.get(position).favorito){
+                    Toast.makeText(
+                        contextoAplicacion,
+                        "Se ha quitado de favoritos",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    listaDatos!!.get(position).favorito=false
+
+                }else{
+                    Toast.makeText(
+                        contextoAplicacion,
+                        "Se ha agregado a favoritos",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    listaDatos!!.get(position).favorito=true
+                }
+                actualizarLista()
+            }
+        })
+
 
         return vistaElemento
     }
 
 
     override fun getFilter(): Filter {
-        return super.getFilter()
+        return filertBueno
     }
 
     private val filertBueno: Filter = object : Filter() {
@@ -140,6 +173,37 @@ class AdaptadorListView(contexto: Context, lista: ArrayList<DatosCamara>) :
      */
     override fun getItemId(i: Int): Long {
         return 0
+    }
+
+    fun setLista(nuevaLista:ArrayList<DatosCamara>){
+        listaDatos=nuevaLista
+        fullLista=nuevaLista
+    }
+    fun actualizarLista(){
+        baseDeDatos.collection("usuarios")
+            .document(usuarioLogeado!!.uid).set(hashMapOf("lista" to listaDatos))
+            .addOnCompleteListener(object : OnCompleteListener<Void> {
+                override fun onComplete(databaseTask: Task<Void>) {
+                    if (databaseTask.isSuccessful) {
+                        listener.agregarFav(listaDatos!!)
+
+                    } else {
+                        Toast.makeText(
+                            contextoAplicacion,
+                            databaseTask.exception.toString(),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            })
+    }
+
+    fun setListener(newListener:ModificarLista){
+        listener=newListener
+    }
+
+    interface ModificarLista{
+        fun agregarFav(lista: ArrayList<DatosCamara>)
     }
 
 }

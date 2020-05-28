@@ -23,8 +23,19 @@ import com.example.drawscan.clases.DialogoEditText
 import com.example.drawscan.clases.InicializarInterfaz
 import com.example.drawscan.globales.Imagenes
 import com.example.drawscan.globales.ListaDatos
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.OnFailureListener
+import com.google.android.gms.tasks.OnSuccessListener
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.UploadTask
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
+import java.io.Serializable
+import java.lang.Exception
 import java.lang.Math.abs
 
 class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListener {
@@ -39,6 +50,9 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
     private lateinit var imagenReferencia: Uri
     private var tituloFotoDefinitivo: String = ""
     private var numeroRedondeado: Double = 0.0
+    private val usuarioLogeado by lazy { FirebaseAuth.getInstance().currentUser }
+    private val baseDeDatos by lazy { FirebaseFirestore.getInstance() }
+    private val referenciaStorage by lazy { FirebaseStorage.getInstance().getReference() }
 
     //Aqui viene las variables de firebase.
 
@@ -54,14 +68,14 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
         //aqui va firebase..
 
 
-        if (intent.extras==null) {
+        if (intent.extras == null) {
             val dialogoEditText = DialogoEditText(this)
             dialogoEditText.show(supportFragmentManager, "")
-        }else{
-            val handler=Handler()
+        } else {
+            val handler = Handler()
             handler.postDelayed(Runnable {
                 onBackPressed()
-            },3000)
+            }, 3000)
         }
     }
 
@@ -185,9 +199,11 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
                         imagenReferencia = imagenCropUri
                         Imagenes.imagen1 = bmd.bitmap
                         capturaImagen2 = true
+                        subirImagenBaseDatos()
                     } else {
                         Imagenes.imagen2 = bmd.bitmap
                         capturaImagen2 = false
+                        subirImagenBaseDatos()
                     }
 
                     if (Imagenes.imagen1 != null && Imagenes.imagen2 != null) {
@@ -197,20 +213,26 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
                         var p: Double? = porcentajeSimilitud(img1!!, img2!!)
 
                         if (p != null) {
+
                             p = 100 - p
                             numeroRedondeado = Math.round((p) * 100.00) / 100.00
                             println("${img1.width},${img1.height} ${img2.width},${img2.height}")
-                            ListaDatos.listaDatos.add(
+                            val datos: DatosCamara =
                                 DatosCamara(
                                     tituloFotoDefinitivo,
-                                    numeroRedondeado,
-                                    imagenReferencia
+                                    numeroRedondeado
                                 )
-                            )
+                            ListaDatos.listaDatos.add(datos)
                             InicializarInterfaz.setArray(ListaDatos.listaDatos)
                             Imagenes.imagen1 = null
                             Imagenes.imagen2 = null
-                            saltoDeActividad()
+
+                            val hashMap = hashMapOf<String, Serializable>(
+                                "lista" to ListaDatos.listaDatos
+                            )
+                            guardarBDUsuario(hashMap)
+
+
                         }
 
 
@@ -265,7 +287,10 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
             var diff = 0L
             for (y in 0 until height) {
                 for (x in 0 until width) {
-                    diff += diferenciarPixeles(nuevaDimension.getPixel(x, y), nuevaDimension2.getPixel(x, y))
+                    diff += diferenciarPixeles(
+                        nuevaDimension.getPixel(x, y),
+                        nuevaDimension2.getPixel(x, y)
+                    )
                 }
             }
             val maxDiff = 3L * 255 * width * height
@@ -324,12 +349,67 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
         startActivity(intent)
     }
 
-    fun saltoDeActividad(){
-        val b=Bundle()
-        val intent=Intent(this, ActividadCamara::class.java)
+    fun saltoDeActividad() {
+        val b = Bundle()
+        val intent = Intent(this, ActividadCamara::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         intent.putExtras(b)
         startActivity(intent)
+    }
+
+    fun guardarBDUsuario(nuevoUsuario: HashMap<String, Serializable>) {
+
+        baseDeDatos.collection("usuarios")
+            .document(usuarioLogeado!!.uid).set(nuevoUsuario)
+            .addOnCompleteListener(object : OnCompleteListener<Void> {
+                override fun onComplete(databaseTask: Task<Void>) {
+                    if (databaseTask.isSuccessful) {
+                        saltoDeActividad()
+                        Toast.makeText(
+                            this@ActividadCamara,
+                            "Se ha añadido correctamente a la base de datos",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    } else {
+                        Toast.makeText(
+                            this@ActividadCamara,
+                            databaseTask.exception.toString(),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            })
+
+
+    }
+
+    fun subirImagenBaseDatos() {
+
+        val imagenRef: StorageReference =
+            referenciaStorage.child(usuarioLogeado!!.uid + "/" + tituloFotoDefinitivo + ".png")
+        imagenRef.putFile(imagenReferencia)
+            .addOnSuccessListener {
+                object : OnSuccessListener<UploadTask.TaskSnapshot> {
+                    override fun onSuccess(task: UploadTask.TaskSnapshot?) {
+                        Toast.makeText(
+                            this@ActividadCamara,
+                            "Foto agregada correctamente",
+                            Toast.LENGTH_LONG
+                        ).show()
+
+                    }
+                }
+            }
+            .addOnFailureListener(object : OnFailureListener {
+                override fun onFailure(exception: Exception) {
+                    Toast.makeText(
+                        this@ActividadCamara,
+                        exception.message,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            })
+
     }
 
 
