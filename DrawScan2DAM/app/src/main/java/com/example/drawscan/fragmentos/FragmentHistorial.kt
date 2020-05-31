@@ -38,6 +38,7 @@ class FragmentHistorial : Fragment() {
     private val usuarioLogeado by lazy { FirebaseAuth.getInstance().currentUser }
 
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -63,39 +64,18 @@ class FragmentHistorial : Fragment() {
         })
         adaptador.setListener(object : AdaptadorListView.ModificarLista{
             override fun agregarFav(lista: ArrayList<DatosCamara>) {
-                var listaFav= arrayListOf<DatosCamara>()
-                for (datos in lista){
-                    if(datos.favorito){
-                        listaFav.add(datos)
-                    }
-                }
-                ListaDatos.setListaDatosFav(listaFav)
 
-                adaptador.setLista(lista)
-                adaptador.notifyDataSetChanged()
+                camaraLiveData.setListaHistorial(lista)
             }
         })
-        ListaDatos.setListener(object :ListaDatos.ListaModificada{
-            override fun listaFavoritoModificado(lista: ArrayList<DatosCamara>) {
 
-                Toast.makeText(context,"Quitado",Toast.LENGTH_LONG).show()
-
-            }
-
-            override fun listaDatosModificado(listaModificada: ArrayList<DatosCamara>) {
-                Toast.makeText(context,"Quitado",Toast.LENGTH_LONG).show()
-
-                adaptador.setLista(listaModificada)
-                adaptador.notifyDataSetChanged()
-            }
-        })
         getListaDB()
         return view
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        camaraLiveData = ViewModelProvider(this).get(ViewModelCamara::class.java)
+        camaraLiveData = ViewModelProvider(requireActivity()).get(ViewModelCamara::class.java)
         InicializarInterfaz.setListener(object : InicializarInterfaz.InsertarDatosEnModelView {
             override fun getLista(listaRellenar: ArrayList<DatosCamara>) {
                 camaraLiveData.setCamaraLiveData(listaRellenar)
@@ -115,6 +95,19 @@ class FragmentHistorial : Fragment() {
                 }
 
             })
+        camaraLiveData.getListaHistorial().observe(viewLifecycleOwner,object :Observer<ArrayList<DatosCamara>>{
+            override fun onChanged(lista: ArrayList<DatosCamara>?) {
+                adaptador.setLista(lista!!)
+                adaptador.notifyDataSetChanged()
+                var listaDeFavoritos= arrayListOf<DatosCamara>()
+                for (elemento in lista){
+                    if(elemento.favorito){
+                        listaDeFavoritos.add(elemento)
+                    }
+                }
+                camaraLiveData.setListaFavoritos(listaDeFavoritos)
+            }
+        })
     }
 
     fun getListaDB(){
@@ -127,12 +120,11 @@ class FragmentHistorial : Fragment() {
                         listaDatosCamara=it
                     }
                     if(listaDatosCamara != null){
-                        ListaDatos.listaDatos=listaDatosCamara!!.lista
+                        camaraLiveData.setListaHistorial(listaDatosCamara!!.lista)
                         adaptador.setLista(listaDatosCamara!!.lista)
                         adaptador.notifyDataSetChanged()
                     }else{
-                        ListaDatos.listaDatos= arrayListOf()
-                        adaptador.setLista(ListaDatos.listaDatos)
+                        adaptador.setLista(arrayListOf())
                         adaptador.notifyDataSetChanged()
                     }
 

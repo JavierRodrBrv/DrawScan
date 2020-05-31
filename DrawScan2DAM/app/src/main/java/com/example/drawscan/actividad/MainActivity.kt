@@ -25,8 +25,8 @@ import com.google.firebase.auth.GoogleAuthProvider
 
 class MainActivity : AppCompatActivity() {
     private val GOOGLE_SIGN = 123 // Código de permiso para iniciar sesión con Google
-    private var mFirebase : FirebaseAuth? = null // Autenticación con Firebase
-    private var gsic : GoogleSignInClient? = null // Cliente de cuentas de Google
+    private var mFirebase: FirebaseAuth? = null // Autenticación con Firebase
+    private var gsic: GoogleSignInClient? = null // Cliente de cuentas de Google
     private var miLayout: ConstraintLayout? = null
     private var animationDrawable: AnimationDrawable? = null
 
@@ -59,39 +59,39 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (this.animationDrawable!=null && !animationDrawable!!.isRunning) {
+        if (this.animationDrawable != null && !animationDrawable!!.isRunning) {
             animationDrawable!!.start();
         }
     }
 
     override fun onPause() {
         super.onPause()
-        if (this.animationDrawable!=null && !animationDrawable!!.isRunning) {
+        if (this.animationDrawable != null && !animationDrawable!!.isRunning) {
             animationDrawable!!.stop();
         }
     }
 
     fun iniciarSesionGoogle(view: View) {
         val intentIniciarSesion = gsic!!.signInIntent
-        startActivityForResult(intentIniciarSesion,GOOGLE_SIGN)
+        startActivityForResult(intentIniciarSesion, GOOGLE_SIGN)
     }
 
     /**
      * Función que obtiene un resultado de la actividad, a través de startActivityForResult()
      */
-    override fun onActivityResult(requestCode: Int,resultCode: Int,data: Intent?) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == GOOGLE_SIGN) {
             try {
                 val taskSignIn = GoogleSignIn.getSignedInAccountFromIntent(data)
-                var cuentaGoogle=taskSignIn.result
+                var cuentaGoogle = taskSignIn.result
                 autenticacionFirebase(cuentaGoogle!!)
-            }catch (e : ApiException){
-                Toast.makeText(this,e.statusCode,Toast.LENGTH_LONG).show()
+            } catch (e: ApiException) {
+                Toast.makeText(this, e.statusCode, Toast.LENGTH_LONG).show()
 
-            }catch(runtimeException:RuntimeExecutionException){
-                Log.d("errorException",runtimeException.message!!)
+            } catch (runtimeException: RuntimeExecutionException) {
+                Log.d("errorException", runtimeException.message!!)
             }
         }
     }
@@ -100,22 +100,32 @@ class MainActivity : AppCompatActivity() {
      * Función que verifica la cuenta elegida de Google con Firebase
      */
     fun autenticacionFirebase(googleAccount: GoogleSignInAccount) {
-        val credential = GoogleAuthProvider.getCredential(googleAccount.idToken,null)
-        mFirebase!!.signInWithCredential(credential).addOnCompleteListener(object : OnCompleteListener<AuthResult>{
-            override fun onComplete(task: Task<AuthResult>) {
+        val credential = GoogleAuthProvider.getCredential(googleAccount.idToken, null)
+        mFirebase!!.signInWithCredential(credential)
+            .addOnCompleteListener(object : OnCompleteListener<AuthResult> {
+                override fun onComplete(task: Task<AuthResult>) {
 
-                if(task.isSuccessful){
-                    val currentUser=mFirebase!!.currentUser
-                    val irDirectamente = Intent(this@MainActivity, PantallaFragments::class.java)
-                    irDirectamente.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    startActivity(irDirectamente)
-                    Toast.makeText(this@MainActivity,"Iniciado sesión como:\n${mFirebase!!.getCurrentUser()!!.displayName}\n${mFirebase!!.getCurrentUser()!!.email}",Toast.LENGTH_LONG).show()
-                }else{
-                    Toast.makeText(this@MainActivity,task.exception!!.message,Toast.LENGTH_LONG).show()
+                    if (task.isSuccessful) {
+                        val currentUser = mFirebase!!.currentUser
+                        val irDirectamente =
+                            Intent(this@MainActivity, PantallaFragments::class.java)
+                        irDirectamente.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        startActivity(irDirectamente)
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Iniciado sesión como:\n${mFirebase!!.getCurrentUser()!!.displayName}\n${mFirebase!!.getCurrentUser()!!.email}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    } else {
+                        Toast.makeText(
+                            this@MainActivity,
+                            task.exception!!.message,
+                            Toast.LENGTH_LONG
+                        ).show()
 
+                    }
                 }
-            }
-        })
+            })
     }
 
 
