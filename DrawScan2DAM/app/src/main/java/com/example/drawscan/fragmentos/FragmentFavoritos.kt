@@ -39,7 +39,7 @@ class FragmentFavoritos : Fragment() {
         adaptador.setListener(object :AdaptadorListView.ModificarLista{
             override fun agregarFav(lista: ArrayList<DatosCamara>) {
 
-                camaraLiveData.setListaHistorial(lista)
+                camaraLiveData.setListaHistorial(camaraLiveData.getListaHistorial().value!!)
 
             }
         })

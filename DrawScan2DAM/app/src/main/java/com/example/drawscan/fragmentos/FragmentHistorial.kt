@@ -99,13 +99,14 @@ class FragmentHistorial : Fragment() {
             override fun onChanged(lista: ArrayList<DatosCamara>?) {
                 adaptador.setLista(lista!!)
                 adaptador.notifyDataSetChanged()
-                var listaDeFavoritos= arrayListOf<DatosCamara>()
+                val listaDeFavoritos= arrayListOf<DatosCamara>()
                 for (elemento in lista){
                     if(elemento.favorito){
                         listaDeFavoritos.add(elemento)
                     }
                 }
                 camaraLiveData.setListaFavoritos(listaDeFavoritos)
+                actualizarLista()
             }
         })
     }
@@ -121,6 +122,7 @@ class FragmentHistorial : Fragment() {
                     }
                     if(listaDatosCamara != null){
                         camaraLiveData.setListaHistorial(listaDatosCamara!!.lista)
+                        ListaDatos.listaDatos=camaraLiveData.getListaHistorial().value!!
                         adaptador.setLista(listaDatosCamara!!.lista)
                         adaptador.notifyDataSetChanged()
                     }else{
@@ -130,6 +132,24 @@ class FragmentHistorial : Fragment() {
 
                 }
 
+            })
+    }
+
+    fun actualizarLista(){
+        baseDeDatos.collection("usuarios")
+            .document(usuarioLogeado!!.uid).set(hashMapOf("lista" to camaraLiveData.getListaHistorial().value))
+            .addOnCompleteListener(object : OnCompleteListener<Void> {
+                override fun onComplete(databaseTask: Task<Void>) {
+                    if (databaseTask.isSuccessful) {
+
+                    } else {
+                        Toast.makeText(
+                            context,
+                            databaseTask.exception.toString(),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
             })
     }
 

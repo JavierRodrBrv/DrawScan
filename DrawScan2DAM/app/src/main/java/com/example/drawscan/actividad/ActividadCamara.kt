@@ -53,6 +53,7 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
     private val usuarioLogeado by lazy { FirebaseAuth.getInstance().currentUser }
     private val baseDeDatos by lazy { FirebaseFirestore.getInstance() }
     private val referenciaStorage by lazy { FirebaseStorage.getInstance().getReference() }
+    private var contador:Int=0 //Este contador es para enumerar el nombre de las imagenes en base de datos.
 
     //Aqui viene las variables de firebase.
 
@@ -201,6 +202,8 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
                         capturaImagen2 = true
                         subirImagenBaseDatos()
                     } else {
+
+                        imagenReferencia = imagenCropUri
                         Imagenes.imagen2 = bmd.bitmap
                         capturaImagen2 = false
                         subirImagenBaseDatos()
@@ -217,7 +220,7 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
                             p = 100 - p
                             numeroRedondeado = Math.round((p) * 100.00) / 100.00
                             println("${img1.width},${img1.height} ${img2.width},${img2.height}")
-                            val datos: DatosCamara =
+                            val datos =
                                 DatosCamara(
                                     tituloFotoDefinitivo,
                                     numeroRedondeado
@@ -384,9 +387,9 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
     }
 
     fun subirImagenBaseDatos() {
-
+        contador++
         val imagenRef: StorageReference =
-            referenciaStorage.child(usuarioLogeado!!.uid + "/" + tituloFotoDefinitivo + ".png")
+            referenciaStorage.child(usuarioLogeado!!.uid + "/" + tituloFotoDefinitivo+contador + ".png")
         imagenRef.putFile(imagenReferencia)
             .addOnSuccessListener {
                 object : OnSuccessListener<UploadTask.TaskSnapshot> {
