@@ -5,14 +5,20 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import com.bumptech.glide.Glide
 import com.example.drawscan.R
 import com.example.drawscan.clases.DatosCamara
+import com.example.drawscan.clases.GlideApp
 import com.example.drawscan.clases.SharedPref
+import com.firebase.ui.storage.images.FirebaseImageLoader
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.sackcentury.shinebuttonlib.ShineButton
+
 
 class AdaptadorListView(contexto: Context, lista: ArrayList<DatosCamara>) :
     ArrayAdapter<DatosCamara>(contexto, 0, lista), Filterable {
@@ -31,6 +37,7 @@ class AdaptadorListView(contexto: Context, lista: ArrayList<DatosCamara>) :
     private val usuarioLogeado by lazy { FirebaseAuth.getInstance().currentUser }
     private val baseDeDatos by lazy { FirebaseFirestore.getInstance() }
     private lateinit var listener: ModificarLista
+    private var mStorage: StorageReference? = null
 
     init {
         listaDatos = lista
@@ -45,24 +52,30 @@ class AdaptadorListView(contexto: Context, lista: ArrayList<DatosCamara>) :
      * @return view del elemento
      */
     override fun getView(position: Int, view: View?, parent: ViewGroup): View {
+        val inflater = (contextoAplicacion as Activity).layoutInflater
+        val vistaElemento = inflater.inflate(R.layout.elemento_lista, null)
+        mStorage = FirebaseStorage.getInstance().getReference().child(usuarioLogeado!!.uid+"/"+listaDatos!!.get(position).tituloImagen+"1")
 
         sharedPreferences = SharedPref(contextoAplicacion)
 
-        val inflater = (contextoAplicacion as Activity).layoutInflater
-        val vistaElemento = inflater.inflate(R.layout.elemento_lista, null)
         main = MainActivity()
         textoTituloFoto = vistaElemento!!.findViewById(R.id.idTituloFoto) as TextView
         textoFecha = vistaElemento.findViewById(R.id.idFecha) as TextView
         porcentajeFoto = vistaElemento.findViewById(R.id.idPorcentaje) as TextView
         fotoImagen=vistaElemento.findViewById(R.id.idImagenFoto) as ImageView
         botonFavorito=vistaElemento.findViewById(R.id.botonFavorito) as ShineButton
+        vistaElemento.setOnClickListener(object : View.OnClickListener{
+            override fun onClick(v: View?) {
+                listener.eliminarElemento(position)
+            }
+        })
 
 
         textoTituloFoto.setText(listaDatos!!.get(position).tituloImagen)
-        porcentajeFoto.setText(contextoAplicacion.resources.getString(R.string.porcentajeExacto)+listaDatos!!.get(position).porcentaje.toString())
-        textoFecha.setText(contextoAplicacion.resources.getString(R.string.fechaConcreta)+listaDatos!!.get(position).dias)
+        porcentajeFoto.setText(contextoAplicacion.resources.getString(R.string.porcentajeExacto)+" "+listaDatos!!.get(position).porcentaje.toString()+" %")
+        textoFecha.setText(contextoAplicacion.resources.getString(R.string.fechaConcreta)+" "+listaDatos!!.get(position).dias)
         //Para rellenar con la foto de la referencia en el imageView de elementoLista
-        //Glide.with(vistaElemento.context).load(listaDatos!!.get(position).fotoReferencia).into(fotoImagen)
+        GlideApp.with(vistaElemento.context).load(mStorage).into(fotoImagen)
 
         if (sharedPreferences.loadNightModeState()) {
             textoFecha.setTextAppearance(R.style.estiloTextoModoOscuro)
@@ -117,8 +130,6 @@ class AdaptadorListView(contexto: Context, lista: ArrayList<DatosCamara>) :
                 actualizarLista()
             }
         })
-
-
         return vistaElemento
     }
 
@@ -204,6 +215,7 @@ class AdaptadorListView(contexto: Context, lista: ArrayList<DatosCamara>) :
 
     interface ModificarLista{
         fun agregarFav(lista: ArrayList<DatosCamara>)
+        fun eliminarElemento(posicion:Int)
     }
 
 }

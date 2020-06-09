@@ -12,7 +12,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorFondo1</item>
-        <item name="android:textColor">@color/colorNegro</item>
+        <item name="android:textColor">@color/colorBlanco</item>
         <item name="titleTextColor">@color/colorPrimaryLight</item>
     </style>
 

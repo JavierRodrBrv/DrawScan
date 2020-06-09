@@ -1,16 +1,17 @@
 package com.example.drawscan.fragmentos
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ListView
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.drawscan.R
+import com.example.drawscan.actividad.ActividadResultadoDetallado
 import com.example.drawscan.actividad.AdaptadorListView
 import com.example.drawscan.clases.DatosCamara
 import com.example.drawscan.clases.InicializarInterfaz
@@ -22,7 +23,9 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
 
 /**
  * A simple [Fragment] subclass.
@@ -67,9 +70,13 @@ class FragmentHistorial : Fragment() {
 
                 camaraLiveData.setListaHistorial(lista)
             }
+
+            override fun eliminarElemento(posicion: Int) {
+                mostrarResultadoDetallado(ListaDatos.listaDatos.get(posicion),posicion)
+            }
         })
 
-        getListaDB()
+        actualizacionAutomatica()
         return view
     }
 
@@ -110,37 +117,14 @@ class FragmentHistorial : Fragment() {
             }
         })
     }
-
-    fun getListaDB(){
-        var listaDatosCamara:ListaDatosCamara?=ListaDatosCamara(arrayListOf())
-        baseDeDatos.collection("usuarios")
-            .document(usuarioLogeado!!.uid).get()
-            .addOnCompleteListener(object : OnCompleteListener<DocumentSnapshot>{
-                override fun onComplete(task: Task<DocumentSnapshot>) {
-                    task.result!!.toObject(ListaDatosCamara::class.java)?.let {
-                        listaDatosCamara=it
-                    }
-                    if(listaDatosCamara != null){
-                        camaraLiveData.setListaHistorial(listaDatosCamara!!.lista)
-                        ListaDatos.listaDatos=camaraLiveData.getListaHistorial().value!!
-                        adaptador.setLista(listaDatosCamara!!.lista)
-                        adaptador.notifyDataSetChanged()
-                    }else{
-                        adaptador.setLista(arrayListOf())
-                        adaptador.notifyDataSetChanged()
-                    }
-
-                }
-
-            })
-    }
-
     fun actualizarLista(){
         baseDeDatos.collection("usuarios")
             .document(usuarioLogeado!!.uid).set(hashMapOf("lista" to camaraLiveData.getListaHistorial().value))
             .addOnCompleteListener(object : OnCompleteListener<Void> {
                 override fun onComplete(databaseTask: Task<Void>) {
                     if (databaseTask.isSuccessful) {
+
+
 
                     } else {
                         Toast.makeText(
@@ -151,6 +135,36 @@ class FragmentHistorial : Fragment() {
                     }
                 }
             })
+    }
+
+    fun mostrarResultadoDetallado(datosCamara: DatosCamara,posicion:Int) {
+        val intent= Intent(context, ActividadResultadoDetallado::class.java)
+        val b:Bundle= Bundle()
+        b.putString("tituloFoto",datosCamara.tituloImagen)
+        b.putString("porcentajeFoto",datosCamara.porcentaje.toString()+" %")
+        b.putString("fechaFoto",datosCamara.dias)
+        b.putInt("posicion",posicion)
+        intent.putExtras(b)
+        startActivity(intent)
+
+    }
+    fun actualizacionAutomatica(){
+        baseDeDatos.collection("usuarios").document(usuarioLogeado!!.uid).addSnapshotListener(object :EventListener<DocumentSnapshot>{
+            override fun onEvent(snap: DocumentSnapshot?, p1: FirebaseFirestoreException?) {
+                if(snap!!.exists()){
+                    val listaActualizada=snap.toObject(ListaDatosCamara::class.java)
+                    if(listaActualizada != null){
+                        camaraLiveData.setListaHistorial(listaActualizada!!.lista)
+                        ListaDatos.listaDatos=camaraLiveData.getListaHistorial().value!!
+                        adaptador.setLista(listaActualizada!!.lista)
+                        adaptador.notifyDataSetChanged()
+                    }else{
+                        adaptador.setLista(arrayListOf())
+                        adaptador.notifyDataSetChanged()
+                    }
+                }
+            }
+        })
     }
 
 

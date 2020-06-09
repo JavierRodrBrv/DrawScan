@@ -53,7 +53,8 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
     private val usuarioLogeado by lazy { FirebaseAuth.getInstance().currentUser }
     private val baseDeDatos by lazy { FirebaseFirestore.getInstance() }
     private val referenciaStorage by lazy { FirebaseStorage.getInstance().getReference() }
-    private var contador:Int=0 //Este contador es para enumerar el nombre de las imagenes en base de datos.
+    private var contador: Int =
+        0 //Este contador es para enumerar el nombre de las imagenes en base de datos.
 
     //Aqui viene las variables de firebase.
 
@@ -338,8 +339,24 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
     }
 
     override fun aplicarTitulo(tituloFoto: String?) {
-        tituloFotoDefinitivo = tituloFoto!!
-        activarCamara()
+        var tituloSeRepite: Boolean = false
+        for (datoCamara in ListaDatos.listaDatos) {
+            if (datoCamara.tituloImagen.equals(tituloFoto)) {
+                tituloSeRepite = true
+                break
+            }
+        }
+        if (tituloSeRepite) {
+            Toast.makeText(
+                this,
+                "El titulo esta repetido, por favor introduzca uno variante",
+                Toast.LENGTH_LONG
+            ).show()
+        } else {
+            tituloFotoDefinitivo = tituloFoto!!
+            activarCamara()
+        }
+
     }
 
     override fun acabarActividad() {
@@ -389,7 +406,7 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
     fun subirImagenBaseDatos() {
         contador++
         val imagenRef: StorageReference =
-            referenciaStorage.child(usuarioLogeado!!.uid + "/" + tituloFotoDefinitivo+contador + ".png")
+            referenciaStorage.child(usuarioLogeado!!.uid + "/" + tituloFotoDefinitivo + contador)
         imagenRef.putFile(imagenReferencia)
             .addOnSuccessListener {
                 object : OnSuccessListener<UploadTask.TaskSnapshot> {

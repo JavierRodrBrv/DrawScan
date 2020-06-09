@@ -17,6 +17,7 @@
         android:drawableEnd="@drawable/icono_exit"
         android:shadowRadius="15.0"
         android:text="@string/cerrarSesionGoogle"
+        android:textColor="@color/colorNegro"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

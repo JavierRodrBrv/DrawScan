@@ -9,15 +9,13 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import com.example.drawscan.R
 import com.example.drawscan.clases.SharedPref
-import com.example.drawscan.fragmentos.AdapterParaFragmentos
-import com.example.drawscan.fragmentos.FragmentAjustes
-import com.example.drawscan.fragmentos.FragmentFavoritos
-import com.example.drawscan.fragmentos.FragmentHistorial
+import com.example.drawscan.fragmentos.*
 import com.example.drawscan.globales.BooleanPopup
 import com.example.drawscan.modalview.ViewModelCamara
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -78,10 +76,6 @@ class PantallaFragments : AppCompatActivity() {
             mostrarDialogoPopUp()
             BooleanPopup.boolPopup = false
         }
-
-
-
-
     }
 
     /**

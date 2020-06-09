@@ -1,5 +1,6 @@
 package com.example.drawscan.fragmentos
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import android.widget.ListView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.example.drawscan.actividad.ActividadResultadoDetallado
 import com.example.drawscan.actividad.AdaptadorListView
 import com.example.drawscan.clases.DatosCamara
 import com.example.drawscan.databinding.FragmentFavoritosBinding
@@ -38,8 +40,10 @@ class FragmentFavoritos : Fragment() {
 
         adaptador.setListener(object :AdaptadorListView.ModificarLista{
             override fun agregarFav(lista: ArrayList<DatosCamara>) {
-
                 camaraLiveData.setListaHistorial(camaraLiveData.getListaHistorial().value!!)
+            }
+            override fun eliminarElemento(posicion: Int) {
+                mostrarResultadoDetallado(ListaDatos.listaDatos.get(posicion),posicion)
 
             }
         })
@@ -51,6 +55,18 @@ class FragmentFavoritos : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         camaraLiveData = ViewModelProvider(requireActivity()).get(ViewModelCamara::class.java)
+
+    }
+
+    fun mostrarResultadoDetallado(datosCamara: DatosCamara,posicion:Int) {
+        val intent= Intent(context, ActividadResultadoDetallado::class.java)
+        val b:Bundle= Bundle()
+        b.putString("tituloFoto",datosCamara.tituloImagen)
+        b.putString("porcentajeFoto",datosCamara.porcentaje.toString()+" %")
+        b.putString("fechaFoto",datosCamara.dias)
+        b.putInt("posicion",posicion)
+        intent.putExtras(b)
+        startActivity(intent)
 
     }
 
