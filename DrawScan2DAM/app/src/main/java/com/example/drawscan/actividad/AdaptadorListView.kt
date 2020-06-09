@@ -133,42 +133,6 @@ class AdaptadorListView(contexto: Context, lista: ArrayList<DatosCamara>) :
         return vistaElemento
     }
 
-
-    override fun getFilter(): Filter {
-        return filertBueno
-    }
-
-    private val filertBueno: Filter = object : Filter() {
-        override fun performFiltering(constraint: CharSequence): FilterResults {
-            val results = FilterResults()
-            val lista2: ArrayList<DatosCamara> = arrayListOf()
-            if (constraint == null || constraint.length == 0) {
-                lista2.addAll(fullLista!!)
-            } else {
-                val filter = constraint.toString().toLowerCase().trim { it <= ' ' }
-                for (date in lista) {
-                    if (date.tituloImagen.toLowerCase().contains(filter)) {
-                        lista2.add(date)
-                    }
-                }
-                results.values = lista2
-                return results
-            }
-            results.values = lista2
-            return results
-        }
-
-        override fun publishResults(
-            constraint: CharSequence,
-            results: FilterResults
-        ) {
-            lista.clear()
-            lista.addAll(results.values as ArrayList<DatosCamara>)
-            notifyDataSetChanged()
-        }
-    }
-
-
     /**
      * Función que cuenta el nº de elementos que contiene el listview
      * @return Nº de elementos del listview

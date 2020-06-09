@@ -61,13 +61,19 @@ class FragmentHistorial : Fragment() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                adaptador.filter.filter(newText)
+                val lista= arrayListOf<DatosCamara>()
+                for(datoCamara in ListaDatos.listaDatos){
+                    if(datoCamara.tituloImagen.contains(newText.toString())){
+                        lista.add(datoCamara)
+                    }
+                }
+                adaptador.setLista(lista)
+                adaptador.notifyDataSetChanged()
                 return false
             }
         })
         adaptador.setListener(object : AdaptadorListView.ModificarLista{
             override fun agregarFav(lista: ArrayList<DatosCamara>) {
-
                 camaraLiveData.setListaHistorial(lista)
             }
 
@@ -117,6 +123,8 @@ class FragmentHistorial : Fragment() {
             }
         })
     }
+
+
     fun actualizarLista(){
         baseDeDatos.collection("usuarios")
             .document(usuarioLogeado!!.uid).set(hashMapOf("lista" to camaraLiveData.getListaHistorial().value))
@@ -136,6 +144,7 @@ class FragmentHistorial : Fragment() {
                 }
             })
     }
+
 
     fun mostrarResultadoDetallado(datosCamara: DatosCamara,posicion:Int) {
         val intent= Intent(context, ActividadResultadoDetallado::class.java)
