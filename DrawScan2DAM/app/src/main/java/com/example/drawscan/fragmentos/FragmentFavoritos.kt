@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ListView
 import android.widget.SearchView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -17,6 +18,10 @@ import com.example.drawscan.clases.DatosCamara
 import com.example.drawscan.databinding.FragmentFavoritosBinding
 import com.example.drawscan.globales.ListaDatos
 import com.example.drawscan.modalview.ViewModelCamara
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 /**
  * A simple [Fragment] subclass.
@@ -29,6 +34,8 @@ class FragmentFavoritos : Fragment() {
     private var binding: FragmentFavoritosBinding? = null
     private lateinit var barraDeBusqueda: SearchView
     private val bindingObtener get() = binding!!
+    private val usuarioLogeado by lazy { FirebaseAuth.getInstance().currentUser }
+    private val baseDeDatos by lazy { FirebaseFirestore.getInstance() }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,7 +45,8 @@ class FragmentFavoritos : Fragment() {
         val view = binding!!.root
         adaptador = AdaptadorListView(
             context!!,
-            ListaDatos.listaDatos
+            ListaDatos.listaDatos,
+            false
         )
 
         binding!!.idListaFavoritos.adapter = adaptador
@@ -63,7 +71,16 @@ class FragmentFavoritos : Fragment() {
 
         adaptador.setListener(object : AdaptadorListView.ModificarLista {
             override fun agregarFav(lista: ArrayList<DatosCamara>) {
-                camaraLiveData.setListaHistorial(camaraLiveData.getListaHistorial().value!!)
+                for (datoCamara in ListaDatos.listaDatos){
+                    for (datoCamaraFav in lista){
+                        if(datoCamara.tituloImagen==datoCamaraFav.tituloImagen&&datoCamara.favorito!=datoCamaraFav.favorito){
+                            datoCamara.favorito=datoCamaraFav.favorito
+                            break
+                        }
+                    }
+                }
+                camaraLiveData.setListaHistorial(ListaDatos.listaDatos)
+                actualizarLista()
             }
 
             override fun eliminarElemento(posicion: Int) {
@@ -91,6 +108,24 @@ class FragmentFavoritos : Fragment() {
         intent.putExtras(b)
         startActivity(intent)
 
+    }
+
+    fun actualizarLista(){
+        baseDeDatos.collection("usuarios")
+            .document(usuarioLogeado!!.uid).set(hashMapOf("lista" to ListaDatos.listaDatos))
+            .addOnCompleteListener(object : OnCompleteListener<Void> {
+                override fun onComplete(databaseTask: Task<Void>) {
+                    if (databaseTask.isSuccessful) {
+
+                    } else {
+                        Toast.makeText(
+                            context,
+                            databaseTask.exception.toString(),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            })
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

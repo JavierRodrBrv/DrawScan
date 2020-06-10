@@ -5,12 +5,11 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import com.bumptech.glide.Glide
 import com.example.drawscan.R
 import com.example.drawscan.clases.DatosCamara
 import com.example.drawscan.clases.GlideApp
 import com.example.drawscan.clases.SharedPref
-import com.firebase.ui.storage.images.FirebaseImageLoader
+import com.example.drawscan.globales.ListaDatos
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
@@ -20,7 +19,7 @@ import com.google.firebase.storage.StorageReference
 import com.sackcentury.shinebuttonlib.ShineButton
 
 
-class AdaptadorListView(contexto: Context, lista: ArrayList<DatosCamara>) :
+class AdaptadorListView(contexto: Context, lista: ArrayList<DatosCamara>,private var esListaHistorial:Boolean) :
     ArrayAdapter<DatosCamara>(contexto, 0, lista), Filterable {
 
     private var contextoAplicacion = contexto
@@ -55,6 +54,7 @@ class AdaptadorListView(contexto: Context, lista: ArrayList<DatosCamara>) :
         val inflater = (contextoAplicacion as Activity).layoutInflater
         val vistaElemento = inflater.inflate(R.layout.elemento_lista, null)
         mStorage = FirebaseStorage.getInstance().getReference().child(usuarioLogeado!!.uid+"/"+listaDatos!!.get(position).tituloImagen+"1")
+
 
         sharedPreferences = SharedPref(contextoAplicacion)
 
@@ -127,7 +127,13 @@ class AdaptadorListView(contexto: Context, lista: ArrayList<DatosCamara>) :
 
                     listaDatos!!.get(position).favorito=true
                 }
-                actualizarLista()
+
+                if(esListaHistorial){
+                    actualizarLista()
+                }else{
+                    listener.agregarFav(listaDatos!!)
+                }
+
             }
         })
         return vistaElemento
@@ -154,6 +160,7 @@ class AdaptadorListView(contexto: Context, lista: ArrayList<DatosCamara>) :
         listaDatos=nuevaLista
         fullLista=nuevaLista
     }
+
     fun actualizarLista(){
         baseDeDatos.collection("usuarios")
             .document(usuarioLogeado!!.uid).set(hashMapOf("lista" to listaDatos))

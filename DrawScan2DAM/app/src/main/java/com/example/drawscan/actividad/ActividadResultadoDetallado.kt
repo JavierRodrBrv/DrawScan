@@ -79,6 +79,7 @@ class ActividadResultadoDetallado : AppCompatActivity() {
     fun eliminarElemento(view: View) {
         ListaDatos.listaDatos.removeAt(posicionLista)
         actualizarLista()
+        finish()
     }
     fun actualizarLista(){
         baseDeDatos.collection("usuarios")
@@ -88,7 +89,7 @@ class ActividadResultadoDetallado : AppCompatActivity() {
                     if (databaseTask.isSuccessful) {
                         mStorage!!.delete()
                         mStorage2!!.delete()
-                        finish()
+
                     } else {
                         Toast.makeText(
                             this@ActividadResultadoDetallado,

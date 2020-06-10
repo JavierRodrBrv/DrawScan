@@ -67,6 +67,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:text="@string/comprendidoPopUp"
+                    android:textColor="@color/colorNegro"
                     android:background="@drawable/boton_redondo_dialogo_aceptar"
                     android:layout_gravity="center"/>
 

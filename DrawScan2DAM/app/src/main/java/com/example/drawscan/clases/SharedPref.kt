@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 
 class SharedPref(context: Context) {
-    private var preferencia: SharedPreferences = context.getSharedPreferences("nombreEjemplo", Context.MODE_PRIVATE)
+    private var preferencia: SharedPreferences = context.getSharedPreferences("Preferencias", Context.MODE_PRIVATE)
     private lateinit var listenerMOscuro:ModoNoche
 
     /**
@@ -35,7 +35,7 @@ class SharedPref(context: Context) {
      * Este metodo activa o desactiva la alerta inicial.
      */
     fun loadAlertaState(): Boolean {
-        return preferencia.getBoolean("AlertaInicial", false)
+        return preferencia.getBoolean("AlertaInicial", true)
     }
 
 

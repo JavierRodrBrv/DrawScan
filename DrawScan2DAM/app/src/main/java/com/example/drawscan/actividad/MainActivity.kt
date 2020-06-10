@@ -30,7 +30,6 @@ class MainActivity : AppCompatActivity() {
     private var miLayout: ConstraintLayout? = null
     private var animationDrawable: AnimationDrawable? = null
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -40,13 +39,13 @@ class MainActivity : AppCompatActivity() {
         )
         setContentView(R.layout.activity_main)
 
+        mFirebase = FirebaseAuth.getInstance()
 
         miLayout = findViewById<View>(R.id.miFondo) as ConstraintLayout
         animationDrawable = miLayout!!.getBackground() as AnimationDrawable?
         animationDrawable?.setEnterFadeDuration(2000)
         animationDrawable?.setExitFadeDuration(4000)
         animationDrawable?.start()
-
 
         // Permite elegir con que cuenta de google quiere iniciar sesion
         val gsio = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -85,7 +84,7 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == GOOGLE_SIGN) {
             try {
                 val taskSignIn = GoogleSignIn.getSignedInAccountFromIntent(data)
-                var cuentaGoogle = taskSignIn.result
+                val cuentaGoogle = taskSignIn.result
                 autenticacionFirebase(cuentaGoogle!!)
             } catch (e: ApiException) {
                 Toast.makeText(this, e.statusCode, Toast.LENGTH_LONG).show()
@@ -129,24 +128,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    /**
-     * Función que ejecuta justo al abrir la aplicación
-     */
-    override fun onStart() {
-        mFirebase = FirebaseAuth.getInstance()
-        if (mFirebase!!.getCurrentUser() != null) { // Si el usuario ya ha iniciado sesión anteriormente, ira directamente a la página principal
-            val irDirectamente = Intent(this, PantallaFragments::class.java)
-            irDirectamente.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            startActivity(irDirectamente)
-            Toast.makeText(
-                applicationContext,
-                "Iniciado sesión como:\n${mFirebase!!.getCurrentUser()!!.displayName}\n${mFirebase!!.getCurrentUser()!!.email}",
-                Toast.LENGTH_LONG
-            ).show()
-        }
 
-        super.onStart()
-    }
 
     /**
      * Función que sobreescribe la funcionalidad al dar el botón de atrás

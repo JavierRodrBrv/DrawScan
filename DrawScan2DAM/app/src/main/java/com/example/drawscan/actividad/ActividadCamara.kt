@@ -39,7 +39,6 @@ import java.lang.Exception
 import java.lang.Math.abs
 
 class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListener {
-    private lateinit var bundle: Bundle //Este bundle es para devolver los datos a la otra actividad.
     private var permisosCamara: Array<String> = arrayOf() // Permisos necesarios para la cámara
     private var uri_imagen: Uri? = null // Uri de la imagen
     private lateinit var imagenCamaraAux: ImageView
@@ -53,10 +52,8 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
     private val usuarioLogeado by lazy { FirebaseAuth.getInstance().currentUser }
     private val baseDeDatos by lazy { FirebaseFirestore.getInstance() }
     private val referenciaStorage by lazy { FirebaseStorage.getInstance().getReference() }
-    private var contador: Int =
-        0 //Este contador es para enumerar el nombre de las imagenes en base de datos.
+    private var contador: Int =0 //Este contador es para enumerar el nombre de las imagenes en base de datos.
 
-    //Aqui viene las variables de firebase.
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,8 +64,6 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
         )
         imagenCamaraAux = findViewById(R.id.idImagenAux)
         barraProgreso = findViewById(R.id.idProgressBar)
-        //aqui va firebase..
-
 
         if (intent.extras == null) {
             val dialogoEditText = DialogoEditText(this)
@@ -124,7 +119,7 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
                     Toast.makeText(
                         this,
                         "Permiso DENEGADO. Por favor, proporcionanos con los permisos necesarios",
-                        Toast.LENGTH_LONG
+                        Toast.LENGTH_SHORT
                     ).show()
                 }
             }

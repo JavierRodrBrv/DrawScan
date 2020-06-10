@@ -51,7 +51,8 @@ class FragmentHistorial : Fragment() {
         val view =binding!!.root
         adaptador = AdaptadorListView(
             context!!,
-            ListaDatos.listaDatos
+            ListaDatos.listaDatos,
+            true
         )
         binding!!.idListaHistorial.adapter=adaptador
         barraDeBusqueda=view.findViewById(R.id.idBusquedaHistorial) as SearchView
@@ -81,7 +82,6 @@ class FragmentHistorial : Fragment() {
                 mostrarResultadoDetallado(ListaDatos.listaDatos.get(posicion),posicion)
             }
         })
-
         actualizacionAutomatica()
         return view
     }
@@ -132,8 +132,6 @@ class FragmentHistorial : Fragment() {
                 override fun onComplete(databaseTask: Task<Void>) {
                     if (databaseTask.isSuccessful) {
 
-
-
                     } else {
                         Toast.makeText(
                             context,
@@ -146,9 +144,10 @@ class FragmentHistorial : Fragment() {
     }
 
 
+
     fun mostrarResultadoDetallado(datosCamara: DatosCamara,posicion:Int) {
         val intent= Intent(context, ActividadResultadoDetallado::class.java)
-        val b:Bundle= Bundle()
+        val b = Bundle()
         b.putString("tituloFoto",datosCamara.tituloImagen)
         b.putString("porcentajeFoto",datosCamara.porcentaje.toString()+" %")
         b.putString("fechaFoto",datosCamara.dias)
@@ -163,9 +162,9 @@ class FragmentHistorial : Fragment() {
                 if(snap!!.exists()){
                     val listaActualizada=snap.toObject(ListaDatosCamara::class.java)
                     if(listaActualizada != null){
-                        camaraLiveData.setListaHistorial(listaActualizada!!.lista)
+                        camaraLiveData.setListaHistorial(listaActualizada.lista)
                         ListaDatos.listaDatos=camaraLiveData.getListaHistorial().value!!
-                        adaptador.setLista(listaActualizada!!.lista)
+                        adaptador.setLista(listaActualizada.lista)
                         adaptador.notifyDataSetChanged()
                     }else{
                         adaptador.setLista(arrayListOf())
