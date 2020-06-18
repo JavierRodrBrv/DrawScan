@@ -20,7 +20,6 @@ import androidx.core.app.ActivityCompat
 import com.example.drawscan.R
 import com.example.drawscan.clases.DatosCamara
 import com.example.drawscan.clases.DialogoEditText
-import com.example.drawscan.clases.InicializarInterfaz
 import com.example.drawscan.globales.Imagenes
 import com.example.drawscan.globales.ListaDatos
 import com.google.android.gms.tasks.OnCompleteListener
@@ -38,6 +37,10 @@ import java.io.Serializable
 import java.lang.Exception
 import java.lang.Math.abs
 
+/**
+ * Esta clase modela la Actividad camara, la cual se encarga de la funcionalidad de la camara.
+ * @author Javier Rodríguez.
+ */
 class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListener {
     private var permisosCamara: Array<String> = arrayOf() // Permisos necesarios para la cámara
     private var uri_imagen: Uri? = null // Uri de la imagen
@@ -45,15 +48,14 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
     private val camaraIDPermision = 300 // Código para los permisos de la cámara
     private val cogerImagenCamaraID = 300 // Código para los permisos de recortar el imagen
     private lateinit var barraProgreso: ProgressBar // La barra de progreso
-    private var capturaImagen2 = false
+    private var capturaImagen2 = false //Variable boolean para permitir la captura de la segunda foto
     private lateinit var imagenReferencia: Uri
-    private var tituloFotoDefinitivo: String = ""
-    private var numeroRedondeado: Double = 0.0
-    private val usuarioLogeado by lazy { FirebaseAuth.getInstance().currentUser }
-    private val baseDeDatos by lazy { FirebaseFirestore.getInstance() }
-    private val referenciaStorage by lazy { FirebaseStorage.getInstance().getReference() }
+    private var tituloFotoDefinitivo: String = "" // Variable string donde almacenamos el titulo de la comparacion
+    private var numeroRedondeado: Double = 0.0 //Variable double donde almacenamos el porcentaje.
+    private val usuarioLogeado by lazy { FirebaseAuth.getInstance().currentUser } //Variable FirebaseAuth donde almacenamos el usuario
+    private val baseDeDatos by lazy { FirebaseFirestore.getInstance() } //Variable Firestore donde instanciamos la base de datos.
+    private val referenciaStorage by lazy { FirebaseStorage.getInstance().getReference() } //Variable que coge la referencia de Storage
     private var contador: Int =0 //Este contador es para enumerar el nombre de las imagenes en base de datos.
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,6 +67,7 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
         imagenCamaraAux = findViewById(R.id.idImagenAux)
         barraProgreso = findViewById(R.id.idProgressBar)
 
+        //Si intent es null, se muestra el dialogo para recoger el titulo de la comparación. Sino, mete 3 s para mostrar la pantalla de carga, acabando así esta actividad.
         if (intent.extras == null) {
             val dialogoEditText = DialogoEditText(this)
             dialogoEditText.show(supportFragmentManager, "")
@@ -79,7 +82,7 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
     /**
      * Función de tipo boolean que retorna si tenemos permisos para la camara y el almacenamiento
      * @return true si lo tenemos, false si no
-     * Para conseguir una imagen de alta calidad, tendiramos que guardar la imagen al almacenamiento externo, para ello el requisito de su permision
+     * Para conseguir una imagen de alta calidad, tendriramos que guardar la imagen al almacenamiento externo, para ello el requisito de su permiso.
      */
     fun comprobarPermisosCamara(): Boolean {
         val permisoCamara = ActivityCompat.checkSelfPermission(
@@ -94,14 +97,14 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
     }
 
     /**
-     * Función que pide los permisos necesarios para llevar a cabo la actividad de la camara
+     * Función que pide los permisos necesarios para llevar a cabo la actividad de la camara.
      */
     fun pedirPermisosCamara() {
         ActivityCompat.requestPermissions(this, permisosCamara, camaraIDPermision)
     }
 
     /**
-     * Funcion que realiza una función u otra dependiendo de las permisiones dadas por el usuario
+     * Funcion que realiza una función u otra dependiendo de las permisiones dadas por el usuario.
      * @param requestCode Código del permiso que solicitamos
      * @param permissions Permisos que solicitamos
      * @param grantResults Resultado del diálogo de los permisos
@@ -128,11 +131,11 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
     }
 
     /**
-     * Función que dependiendo de los permisos dados, activa el intent de la camara o no
+     * Función que dependiendo de los permisos dados, activa el intent de la camara o no.
      */
     fun activarCamara() {
         if (!comprobarPermisosCamara()) {
-            // Si no tenemos los permisos necesarios para llevar a cabo la actividad, se lo pedimos
+            // Si no tenemos los permisos necesarios para llevar a cabo la actividad, se lo pedimos.
             pedirPermisosCamara()
             if (!ActivityCompat.shouldShowRequestPermissionRationale(
                     this,
@@ -152,7 +155,7 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
     }
 
     /**
-     * Función que hace un intent para coger la imagen de la camara
+     * Función que hace un intent para coger la imagen de la camara.
      * También será guardada en el almacenamiento externo, para una imagen con mayor calidad
      */
     fun intentCamara() {
@@ -188,41 +191,36 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
                     val imagenCropUri = imagenCrop.uri // Conseguir la uri de la imagen cropeada
                     // Ponemos esa imagen cropeada en ImageView
                     imagenCamaraAux.setImageURI(imagenCropUri)
-
-                    //Para el reconocimineto de imagen, necesitamos convertirlo en una imagen drawable Bitmap
+                    //Para el reconocimiento de imagen, necesitamos convertirlo en una imagen drawable Bitmap
                     val bmd: BitmapDrawable = imagenCamaraAux.drawable as BitmapDrawable
 
+                    //Si capturaImagen2 es false, entra y realiza la primera fotografia. Sino, realiza la segunda fotografia.
                     if (!capturaImagen2) {
                         imagenReferencia = imagenCropUri
                         Imagenes.imagen1 = bmd.bitmap
                         capturaImagen2 = true
                         subirImagenBaseDatos()
                     } else {
-
                         imagenReferencia = imagenCropUri
                         Imagenes.imagen2 = bmd.bitmap
                         capturaImagen2 = false
                         subirImagenBaseDatos()
                     }
-
+                    //Si ambas imagenes ya se han tomado, nos dirigimos a realizar el calculo de la comparación.Si no, realiza la segunda foto.
                     if (Imagenes.imagen1 != null && Imagenes.imagen2 != null) {
-
                         val img1 = Imagenes.imagen1
                         val img2 = Imagenes.imagen2
                         var p: Double? = porcentajeSimilitud(img1!!, img2!!)
-
+                        //Si p que es porcentaje es distinto de null, en este caso estaria bien ya que se ha realizado la operación correctamente.
                         if (p != null) {
-
                             p = 100 - p
                             numeroRedondeado = Math.round((p) * 100.00) / 100.00
-                            println("${img1.width},${img1.height} ${img2.width},${img2.height}")
                             val datos =
                                 DatosCamara(
                                     tituloFotoDefinitivo,
                                     numeroRedondeado
                                 )
                             ListaDatos.listaDatos.add(datos)
-                            InicializarInterfaz.setArray(ListaDatos.listaDatos)
                             Imagenes.imagen1 = null
                             Imagenes.imagen2 = null
 
@@ -230,19 +228,13 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
                                 "lista" to ListaDatos.listaDatos
                             )
                             guardarBDUsuario(hashMap)
-
-
                         }
-
-
                     } else {
                         Toast.makeText(this, "Vamos a por la segunda foto", Toast.LENGTH_LONG)
                             .show()
                         activarCamara()
                     }
-
                 } else {
-
                     // Esto se ejecuta en el caso de que en la opcion de recortar la imagen, el usuario quiere volver a la camara
                     finish()
                     val bundleParaReiniciarActividad = Bundle()
@@ -260,12 +252,13 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
 
 
     /**
-     * Esta función es la que calcula las dos imagenes.
+     * Esta función es la que determina el porcentaje de similitud entre una fotografía y otra.
+     * @param img1: la primera imagen tomada anteriormente.
+     * @param img2: la primera imagen tomada anteriormente.
      */
     fun porcentajeSimilitud(img1: Bitmap, img2: Bitmap): Double? {
         val nuevaDimension = getRedimensionBitmap(img1, 768, 768)
         val nuevaDimension2 = getRedimensionBitmap(img2, 768, 768)
-        println("${nuevaDimension!!.width},${nuevaDimension.height} ${nuevaDimension2!!.width},${nuevaDimension2.height}")
 
         val width = nuevaDimension!!.width
         val height = nuevaDimension.height
@@ -299,7 +292,11 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
     }
 
     /**
-     *
+     * Función que obliga a modificar el tamaño de las dos imagenes para que tengan las mismas dimensiones, ya que sino se hace esto,
+     * seria bastante complicado o imposible de realizar el calculo de comparación. Directamente da fallo si no se obliga a que tengan el mismo tamaño.
+     * @param bm: la imagen que quieras modificar
+     * @param newHeight: la nueva altura que le quieres poner a la imagen.
+     * @param newWidth: La nueva anchura que le quieres poner a la imagen.
      */
     fun getRedimensionBitmap(bm: Bitmap, newWidth: Int, newHeight: Int): Bitmap? {
         val width = bm.width
@@ -310,7 +307,6 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
         val matrix = Matrix()
         // Redimensiona el bitmap
         matrix.postScale(scaleWidth, scaleHeight)
-
         // Recrea un el nuevo Bitmap
         val resizedBitmap = Bitmap.createBitmap(
             bm, 0, 0, width, height, matrix, false
@@ -318,10 +314,10 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
         bm.recycle()
         return resizedBitmap
     }
-
-
     /**
      * Función que clasifica los pixeles con sus respectivos colores.
+     * @param rgb1: los colores rgb de la primera imagen.
+     * @param rgb2: Los colores rgb de la segunda imagen.
      */
     fun diferenciarPixeles(rgb1: Int, rgb2: Int): Int {
         val r1 = (rgb1 shr 16) and 0xff
@@ -333,14 +329,21 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
         return abs(r1 - r2) + abs(g1 - g2) + abs(b1 - b2)
     }
 
+    /**
+     * Funcion que recoge el titulo intrducido por el usuario y lo ingresa en la variable String.
+     * @param tituloFoto: Variable string que recoge el titulo introducido por el usuario.
+     */
     override fun aplicarTitulo(tituloFoto: String?) {
         var tituloSeRepite: Boolean = false
+        //Compara si en la lista hay otro elemento con el mismo nombre.
         for (datoCamara in ListaDatos.listaDatos) {
+            //Si hay otro elemento con el mismo titulo, la variable tituloSeRepite se convierte a true.
             if (datoCamara.tituloImagen.equals(tituloFoto)) {
                 tituloSeRepite = true
                 break
             }
         }
+        //Si la variable es true, notifica al usuario mediante un Toast de que el titulo ya se repite. Sino, se aplica el titulo
         if (tituloSeRepite) {
             Toast.makeText(
                 this,
@@ -354,16 +357,25 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
 
     }
 
+    /**
+     * Función que finaliza la actividad.
+     */
     override fun acabarActividad() {
         finish()
     }
 
+    /**
+     * Función que sale de la actividad camara y redirige a PantallaFragments.
+     */
     override fun onBackPressed() {
         val intent = Intent(this, PantallaFragments::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         startActivity(intent)
     }
 
+    /**
+     * Función que como su nombre indica, salta de la actividad actual y redirige a ActividadCamara.
+     */
     fun saltoDeActividad() {
         val b = Bundle()
         val intent = Intent(this, ActividadCamara::class.java)
@@ -372,12 +384,17 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
         startActivity(intent)
     }
 
+    /**
+     * Función que realiza guardar los datos obtenidos de la comparación en base de datos.
+     * @param nuevoUsuario: Es un hashMap de tipo String y serializable.
+     */
     fun guardarBDUsuario(nuevoUsuario: HashMap<String, Serializable>) {
 
         baseDeDatos.collection("usuarios")
             .document(usuarioLogeado!!.uid).set(nuevoUsuario)
             .addOnCompleteListener(object : OnCompleteListener<Void> {
                 override fun onComplete(databaseTask: Task<Void>) {
+                    //Si la respuesta es successful, salta de actividad y muestra Toast. Sino, saca exception.
                     if (databaseTask.isSuccessful) {
                         saltoDeActividad()
                         Toast.makeText(
@@ -398,6 +415,9 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
 
     }
 
+    /**
+     * Función que realiza guardar las imagenes tomadas anteriormente a base de datos Storage.
+     */
     fun subirImagenBaseDatos() {
         contador++
         val imagenRef: StorageReference =
@@ -424,8 +444,5 @@ class ActividadCamara : AppCompatActivity(), DialogoEditText.EditTextTituloListe
                     ).show()
                 }
             })
-
     }
-
-
 }

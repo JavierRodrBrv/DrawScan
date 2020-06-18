@@ -15,33 +15,31 @@ import com.example.drawscan.globales.ListaDatos
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
+/**
+ * Esta clase modela la ActividadResultadoDetallado, la cual muestra los detalles de la comparación.
+ * @author Javier Rodríguez
+ */
 class ActividadResultadoDetallado : AppCompatActivity() {
-
-    private lateinit var titulo: TextView
-    private lateinit var porcentaje: TextView
-    private lateinit var fecha: TextView
-    private lateinit var imagen1: ImageView
-    private lateinit var imagen2: ImageView
-    private var mStorage: StorageReference? = null
-    private var mStorage2: StorageReference? = null
-    private lateinit var sharedPreferences: SharedPref
-    private val baseDeDatos by lazy { FirebaseFirestore.getInstance() }
-    private val usuarioLogeado by lazy { FirebaseAuth.getInstance().currentUser }
-    private lateinit var adaptadorListView:AdaptadorListView
-    private var posicionLista:Int=0
+    private lateinit var titulo: TextView // Variable titulo de tiulo textView para almacenar el String.
+    private lateinit var porcentaje: TextView //Variable porcentaje de tipo textview para almacenar el porcentaje.
+    private lateinit var fecha: TextView //Variable fecha de tipo textview para almacenar la fecha la cual se realizó la comparación.
+    private lateinit var imagen1: ImageView //En esta variable se almacena la primera fotografia.
+    private lateinit var imagen2: ImageView //Esta variable almacena la segunda fotografia.
+    private var mStorage: StorageReference? = null //Variable que permite recuperar la primera fotografia de Storage.
+    private var mStorage2: StorageReference? = null //Variable que permite recuperar la segunda fotografía de Storage.
+    private lateinit var sharedPreferences: SharedPref //Variable que permite guardar las preferencias.
+    private val baseDeDatos by lazy { FirebaseFirestore.getInstance() } //Variable que recoge la base de datos.
+    private val usuarioLogeado by lazy { FirebaseAuth.getInstance().currentUser } //Variable que recoge el usuario.
+    private var posicionLista:Int=0 //Variable que guardamos para determinar en que posicion en la lista se encuentra el elemento.
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         sharedPreferences = SharedPref(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.resultado_detallado)
-
         val b:Bundle=intent.extras!!
         titulo=findViewById(R.id.idTituloDetallado)
         porcentaje=findViewById(R.id.idPorcentajeDetallado)
@@ -60,14 +58,23 @@ class ActividadResultadoDetallado : AppCompatActivity() {
         GlideApp.with(this).load(mStorage2).into(imagen2)
     }
 
+    /**
+     * Esta función te redirige a PantallaFragments si presionas atrás con el movil.
+     */
     override fun onBackPressed() {
         val i = Intent(this, PantallaFragments::class.java)
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
         startActivity(i)
         super.onBackPressed()
     }
+
+    /**
+     * Esta función recupera el tema que hay en ese momento, ya sea modo oscuro o el normal.
+     * @return retorna el tema seleccionado.
+     */
     override fun getTheme(): Resources.Theme {
         val theme = super.getTheme()
+        //Comprueba si la preferencia esta true, si es asi, se activa el modo oscuro, sino, se aplica el tema normal.
         if (sharedPreferences.loadNightModeState()) {
             theme.applyStyle(R.style.NightMode, true)
         } else {
@@ -76,16 +83,25 @@ class ActividadResultadoDetallado : AppCompatActivity() {
         return theme
     }
 
+    /**
+     * Función que permite eliminar el elemento de la lista.
+     * @param view: se genera con el Onclick, pero no se usa.
+     */
     fun eliminarElemento(view: View) {
         ListaDatos.listaDatos.removeAt(posicionLista)
         actualizarLista()
         finish()
     }
+
+    /**
+     * Función que recupera los datos de la base de datos y lo actualiza en la lista.
+     */
     fun actualizarLista(){
         baseDeDatos.collection("usuarios")
             .document(usuarioLogeado!!.uid).set(hashMapOf("lista" to ListaDatos.listaDatos))
             .addOnCompleteListener(object : OnCompleteListener<Void> {
                 override fun onComplete(databaseTask: Task<Void>) {
+                    //Si la consulta es true, se eliminar las dos imagenes de base de datos Storage, sino, saca exception.
                     if (databaseTask.isSuccessful) {
                         mStorage!!.delete()
                         mStorage2!!.delete()

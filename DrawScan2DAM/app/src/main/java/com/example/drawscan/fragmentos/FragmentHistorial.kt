@@ -14,7 +14,6 @@ import com.example.drawscan.R
 import com.example.drawscan.actividad.ActividadResultadoDetallado
 import com.example.drawscan.actividad.AdaptadorListView
 import com.example.drawscan.clases.DatosCamara
-import com.example.drawscan.clases.InicializarInterfaz
 import com.example.drawscan.clases.ListaDatosCamara
 import com.example.drawscan.databinding.FragmentHistorialBinding
 import com.example.drawscan.globales.ListaDatos
@@ -28,25 +27,21 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 
 /**
- * A simple [Fragment] subclass.
+ * Clase que modela un fragment de FragmentHistorial
+ * @author Javi Rodriguez
  */
 class FragmentHistorial : Fragment() {
-
     private lateinit var camaraLiveData: ViewModelCamara //Este View-Model es el que utilizamos para rellenar la lista con los datos de la camara.
-    private lateinit var adaptador: AdaptadorListView
-    private var binding: FragmentHistorialBinding? = null
+    private lateinit var adaptador: AdaptadorListView //adaptador que contiene la lista de la aplicacion.
+    private var binding: FragmentHistorialBinding? = null //encuentra los elementos del layout de FragmentHistorial.
     private val bindingObtener get() = binding!!
-    private lateinit var barraDeBusqueda:SearchView
-    private val baseDeDatos by lazy { FirebaseFirestore.getInstance() }
-    private val usuarioLogeado by lazy { FirebaseAuth.getInstance().currentUser }
-
-
-
+    private lateinit var barraDeBusqueda:SearchView //Variable que contiene la barra de busqueda del layout.
+    private val baseDeDatos by lazy { FirebaseFirestore.getInstance() } //Variable Firestore donde instanciamos la base de datos.
+    private val usuarioLogeado by lazy { FirebaseAuth.getInstance().currentUser } //Variable FirebaseAuth donde almacenamos el usuario
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         binding=FragmentHistorialBinding.inflate(inflater,container,false)
         val view =binding!!.root
         adaptador = AdaptadorListView(
@@ -60,7 +55,10 @@ class FragmentHistorial : Fragment() {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
             }
-
+            /**
+             * Funcion que permite filtrar los elementos mediante a lo que se le introduzca en en campo de la barra de busqueda.
+             * @param newText: de tipo string que se compara si existe en la lista.
+             */
             override fun onQueryTextChange(newText: String?): Boolean {
                 val lista= arrayListOf<DatosCamara>()
                 for(datoCamara in ListaDatos.listaDatos){
@@ -74,11 +72,11 @@ class FragmentHistorial : Fragment() {
             }
         })
         adaptador.setListener(object : AdaptadorListView.ModificarLista{
-            override fun agregarFav(lista: ArrayList<DatosCamara>) {
+            override fun agregarFav(lista: ArrayList<DatosCamara>) {//Establece la lista en el fragment historial
                 camaraLiveData.setListaHistorial(lista)
             }
 
-            override fun eliminarElemento(posicion: Int) {
+            override fun eliminarElemento(posicion: Int) {//Elimina el elemento de la lista.
                 mostrarResultadoDetallado(ListaDatos.listaDatos.get(posicion),posicion)
             }
         })
@@ -89,12 +87,6 @@ class FragmentHistorial : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         camaraLiveData = ViewModelProvider(requireActivity()).get(ViewModelCamara::class.java)
-        InicializarInterfaz.setListener(object : InicializarInterfaz.InsertarDatosEnModelView {
-            override fun getLista(listaRellenar: ArrayList<DatosCamara>) {
-                camaraLiveData.setCamaraLiveData(listaRellenar)
-            }
-        })
-
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -124,7 +116,9 @@ class FragmentHistorial : Fragment() {
         })
     }
 
-
+    /**
+     * Funcion que actualiza la lista historial y la base de datos.
+     */
     fun actualizarLista(){
         baseDeDatos.collection("usuarios")
             .document(usuarioLogeado!!.uid).set(hashMapOf("lista" to camaraLiveData.getListaHistorial().value))
@@ -143,8 +137,11 @@ class FragmentHistorial : Fragment() {
             })
     }
 
-
-
+    /**
+     * Funcion que realiza un intent a la actividad ActividadResultadoDetallado, pasando todos los datos.
+     * @param datosCamara: los datos de la camara
+     * @param posicion: la posicion de ese elemento
+     */
     fun mostrarResultadoDetallado(datosCamara: DatosCamara,posicion:Int) {
         val intent= Intent(context, ActividadResultadoDetallado::class.java)
         val b = Bundle()
@@ -156,6 +153,10 @@ class FragmentHistorial : Fragment() {
         startActivity(intent)
 
     }
+
+    /**
+     * Funcion que actualiza automaticamente la lista cuando recibe algun cambio la base de datos.
+     */
     fun actualizacionAutomatica(){
         baseDeDatos.collection("usuarios").document(usuarioLogeado!!.uid).addSnapshotListener(object :EventListener<DocumentSnapshot>{
             override fun onEvent(snap: DocumentSnapshot?, p1: FirebaseFirestoreException?) {
@@ -174,6 +175,4 @@ class FragmentHistorial : Fragment() {
             }
         })
     }
-
-
 }

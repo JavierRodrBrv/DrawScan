@@ -10,6 +10,10 @@ import com.google.firebase.storage.StorageReference
 import java.io.InputStream
 
 @GlideModule
+/**
+ * Clase auxiliar de la libreria de Glide, sin esta clase ha sido imposible el funcionamiento de esta libreria.
+ * @author Javier Rodríguez.
+ */
 class GlideModule: AppGlideModule() {
     override fun registerComponents(context: Context, glide: Glide, registry: Registry) {
         registry.append(StorageReference::class.java,InputStream::class.java,FirebaseImageLoader.Factory())

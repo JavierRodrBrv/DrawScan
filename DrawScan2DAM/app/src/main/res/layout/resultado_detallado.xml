@@ -12,6 +12,7 @@
         android:layout_width="210dp"
         android:layout_height="210dp"
         android:layout_marginTop="100dp"
+        app:layout_constraintEnd_toStartOf="@+id/idImagen2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/idTituloDetallado"
         tools:src="@tools:sample/avatars" />
@@ -22,6 +23,7 @@
         android:layout_height="210dp"
         android:layout_marginTop="100dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/idImagen1"
         app:layout_constraintTop_toBottomOf="@+id/idTituloDetallado"
         tools:src="@tools:sample/avatars" />
 
@@ -44,6 +46,7 @@
         android:layout_marginTop="52dp"
         android:text="TextView"
         android:textSize="20sp"
+        android:textStyle="bold"
         android:fontFamily="@font/minimal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.502"
@@ -57,7 +60,7 @@
         android:layout_marginTop="16dp"
         android:fontFamily="@font/minimal"
         android:text="TextView"
-
+        android:textStyle="bold"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.678"
@@ -69,8 +72,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="56dp"
-        android:text="Eliminar"
+        android:textColor="@color/colorPrimary"
         android:onClick="eliminarElemento"
+        android:background="@drawable/boton_redondo_eliminar"
+        android:drawableStart="@drawable/ic_delete_black_24dp"
+        android:paddingStart="43dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -84,7 +90,7 @@
         android:layout_marginTop="52dp"
         android:text="@string/porcentajeExacto"
         android:textSize="20sp"
-
+        android:textStyle="bold"
         android:fontFamily="@font/minimal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/idImagen1" />
@@ -97,6 +103,7 @@
         android:layout_marginTop="16dp"
         android:fontFamily="@font/minimal"
         android:text="@string/fechaConcreta"
+        android:textStyle="bold"
 
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"

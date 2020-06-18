@@ -23,12 +23,16 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 
+/**
+ * Clase principal que modela la actividad MainActivity.
+ * @author Javier Rodríguez.
+ */
 class MainActivity : AppCompatActivity() {
     private val GOOGLE_SIGN = 123 // Código de permiso para iniciar sesión con Google
     private var mFirebase: FirebaseAuth? = null // Autenticación con Firebase
     private var gsic: GoogleSignInClient? = null // Cliente de cuentas de Google
-    private var miLayout: ConstraintLayout? = null
-    private var animationDrawable: AnimationDrawable? = null
+    private var miLayout: ConstraintLayout? = null //El layout de mainActivity
+    private var animationDrawable: AnimationDrawable? = null //Variable de tipo AnimationDrawable para meter animación en los colores.
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,9 +42,7 @@ class MainActivity : AppCompatActivity() {
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         )
         setContentView(R.layout.activity_main)
-
         mFirebase = FirebaseAuth.getInstance()
-
         miLayout = findViewById<View>(R.id.miFondo) as ConstraintLayout
         animationDrawable = miLayout!!.getBackground() as AnimationDrawable?
         animationDrawable?.setEnterFadeDuration(2000)
@@ -55,32 +57,34 @@ class MainActivity : AppCompatActivity() {
         gsic = GoogleSignIn.getClient(this, gsio)
 
     }
-
     override fun onResume() {
         super.onResume()
         if (this.animationDrawable != null && !animationDrawable!!.isRunning) {
             animationDrawable!!.start();
         }
     }
-
     override fun onPause() {
         super.onPause()
         if (this.animationDrawable != null && !animationDrawable!!.isRunning) {
             animationDrawable!!.stop();
         }
     }
-
+    /**
+     * Función que permite iniciar sesion con Google.
+     * @param view: Es del onClick pero no se usa.
+     */
     fun iniciarSesionGoogle(view: View) {
         val intentIniciarSesion = gsic!!.signInIntent
         startActivityForResult(intentIniciarSesion, GOOGLE_SIGN)
     }
-
     /**
      * Función que obtiene un resultado de la actividad, a través de startActivityForResult()
+     * @param requestCode : Se utiliza para obtener una respuesta en la consulta.
+     * @param resultCode : No se utiliza.
+     * @param data : No se utiliza.
      */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
         if (requestCode == GOOGLE_SIGN) {
             try {
                 val taskSignIn = GoogleSignIn.getSignedInAccountFromIntent(data)
@@ -94,16 +98,15 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
     /**
      * Función que verifica la cuenta elegida de Google con Firebase
+     * @param googleAccount: Variable que almacena la cuenta de Google.
      */
     fun autenticacionFirebase(googleAccount: GoogleSignInAccount) {
         val credential = GoogleAuthProvider.getCredential(googleAccount.idToken, null)
         mFirebase!!.signInWithCredential(credential)
             .addOnCompleteListener(object : OnCompleteListener<AuthResult> {
                 override fun onComplete(task: Task<AuthResult>) {
-
                     if (task.isSuccessful) {
                         val currentUser = mFirebase!!.currentUser
                         val irDirectamente =
@@ -126,17 +129,10 @@ class MainActivity : AppCompatActivity() {
                 }
             })
     }
-
-
-
-
     /**
      * Función que sobreescribe la funcionalidad al dar el botón de atrás
      */
     override fun onBackPressed() {
         finishAffinity()
     }
-
-
-
 }

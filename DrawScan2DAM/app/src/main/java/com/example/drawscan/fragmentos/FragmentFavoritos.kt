@@ -24,18 +24,16 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 /**
- * A simple [Fragment] subclass.
+ * Clase que modela un fragment de Fragment Favoritos
  */
 class FragmentFavoritos : Fragment() {
-
     private lateinit var camaraLiveData: ViewModelCamara //Este View-Model es el que utilizamos para rellenar la lista con los datos de la camara.
-    private lateinit var listaFav: ListView
-    private lateinit var adaptador: AdaptadorListView
-    private var binding: FragmentFavoritosBinding? = null
-    private lateinit var barraDeBusqueda: SearchView
+    private lateinit var adaptador: AdaptadorListView //Adaptador que contiene los elementos de la lista.
+    private var binding: FragmentFavoritosBinding? = null //Para encontrar los componentes del layout FragmentsFavoritos
+    private lateinit var barraDeBusqueda: SearchView //Barra de busqueda para buscar los elementos.
     private val bindingObtener get() = binding!!
-    private val usuarioLogeado by lazy { FirebaseAuth.getInstance().currentUser }
-    private val baseDeDatos by lazy { FirebaseFirestore.getInstance() }
+    private val usuarioLogeado by lazy { FirebaseAuth.getInstance().currentUser } //Variable FirebaseAuth donde almacenamos el usuario
+    private val baseDeDatos by lazy { FirebaseFirestore.getInstance() } //Variable Firestore donde instanciamos la base de datos.
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,11 +53,14 @@ class FragmentFavoritos : Fragment() {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
             }
-
+            /**
+             * Funcion que permite filtrar los elementos mediante a lo que se le introduzca en en campo de la barra de busqueda.
+             * @param newText: de tipo string que se compara si existe en la lista.
+             */
             override fun onQueryTextChange(newText: String?): Boolean {
                 val lista = arrayListOf<DatosCamara>()
                 for (datoCamara in ListaDatos.listaDatos) {
-                    if (datoCamara.tituloImagen.contains(newText.toString())) {
+                    if (datoCamara.tituloImagen.contains(newText.toString())) {//Si la lista contiene ese titulo, se añade a la lista.
                         lista.add(datoCamara)
                     }
                 }
@@ -98,6 +99,11 @@ class FragmentFavoritos : Fragment() {
 
     }
 
+    /**
+     * Funcion que realiza un intent a la actividad ActividadResultadoDetallado, pasando todos los datos.
+     * @param datosCamara: los datos de la camara
+     * @param posicion: la posicion de ese elemento
+     */
     fun mostrarResultadoDetallado(datosCamara: DatosCamara, posicion: Int) {
         val intent = Intent(context, ActividadResultadoDetallado::class.java)
         val b: Bundle = Bundle()
@@ -110,6 +116,9 @@ class FragmentFavoritos : Fragment() {
 
     }
 
+    /**
+     * Función que actualiza la base de datos y la lista.
+     */
     fun actualizarLista(){
         baseDeDatos.collection("usuarios")
             .document(usuarioLogeado!!.uid).set(hashMapOf("lista" to ListaDatos.listaDatos))

@@ -21,30 +21,28 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 
 /**
- * A simple [Fragment] subclass.
+ * Clase que modela el fragment FragmentAjustes
+ * @author Javi Rodríguez
  */
 class FragmentAjustes : Fragment() {
-
-    private lateinit var fragmentView: View
-    private lateinit var botonCerrarSesion: Button
-    private lateinit var uFirebase: FirebaseAuth
-    private lateinit var gsic: GoogleSignInClient
-    private lateinit var animacion: AnimationDrawable
-    private lateinit var switchModoOscuro: Switch
-    private lateinit var switchAlertaInicial:Switch
-    private val sharedPref by lazy { (context as PantallaFragments).getPreferences() }
-    private val pantallaFragments by lazy { context as PantallaFragments }
-
+    private lateinit var fragmentView: View //Variable de tipo view que se utiliza para inflar el layout.
+    private lateinit var botonCerrarSesion: Button //Se utiliza para cerrar sesion
+    private lateinit var uFirebase: FirebaseAuth //Variable FirebaseAuth donde almacenamos el usuario
+    private lateinit var gsic: GoogleSignInClient // Cliente de cuentas de Google
+    private lateinit var animacion: AnimationDrawable //Animacion del background del layout
+    private lateinit var switchModoOscuro: Switch //Switch que permite el modo oscuro
+    private lateinit var switchAlertaInicial:Switch //Switch que permite la alerta inicial
+    private val sharedPref by lazy { (context as PantallaFragments).getPreferences() } //Variable que contiene la preferencia.
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fragmentView = LayoutInflater.from(context).inflate(R.layout.fragment_ajustes, null)
         switchModoOscuro=fragmentView.findViewById(R.id.swModoOscuro)
         switchAlertaInicial=fragmentView.findViewById(R.id.swAlertaInicial)
-        if(sharedPref.loadNightModeState()){
+        if(sharedPref.loadNightModeState()){//Si es true, el switch de activa
             switchModoOscuro.isChecked=true
         }
-        if(sharedPref.loadAlertaState()){
+        if(sharedPref.loadAlertaState()){//Si es true, el switch de activa
             switchAlertaInicial.isChecked=true
         }
         switchModoOscuro.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener{
@@ -79,7 +77,7 @@ class FragmentAjustes : Fragment() {
         gsic = GoogleSignIn.getClient(fragmentView.context, gsio)
         botonCerrarSesion = fragmentView.findViewById(R.id.botonCerrarSesion)
         botonCerrarSesion.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View?) {
+            override fun onClick(v: View?) {//Esta función muestra el dialogo de confirmacion para cerrar sesion.
                 val dialogo =
                     AlertDialog.Builder(fragmentView.context, R.style.estiloDialogoCerrarSesion)
                 dialogo.setIcon(R.drawable.icono_alerta)
@@ -120,7 +118,4 @@ class FragmentAjustes : Fragment() {
         })
         return fragmentView
     }
-
-
-
 }
